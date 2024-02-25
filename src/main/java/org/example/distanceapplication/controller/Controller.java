@@ -29,7 +29,7 @@ public class Controller {
         return new ResponseEntity<>(dataService.getCityInfoByName(cityName), HttpStatus.OK);
     }
     @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
-    public ResponseEntity<HashMap<?,?>> getDistance(@PathVariable String firstCity, @PathVariable String secondCity){
+    public ResponseEntity<HashMap<String, String>> getDistance(@PathVariable String firstCity, @PathVariable String secondCity){
         var firstCityInfo = dataService.getCityInfoByName(firstCity);
         var secondCityInfo = dataService.getCityInfoByName(secondCity);
         double distance = distanceService.getDistanceInKilometres(firstCityInfo, secondCityInfo);
