@@ -7,5 +7,5 @@
 2. При помощи системы сборки **Gradle** соберите и запустите проект.
 3. После запуска откройте браузер и затем введите один из адресов:
 * _http://localhost:8080/api/all_ (для того чтобы посмотреть все доступные города и их координаты)
-* _http://localhost:8080/api/info?city=cityName_ (вместо `cityName` введите интересующий город)
+* _http://localhost:8080/api/info/?city=cityName_ (вместо `cityName` введите интересующий город)
 * _http://localhost:8080/api/distance/{firstCity}+{secondCity}_ (чтобы рассчитать расстояние между городом и `firstCity` городом `secondCity`)
