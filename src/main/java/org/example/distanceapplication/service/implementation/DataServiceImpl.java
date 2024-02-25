@@ -1,14 +1,14 @@
 package org.example.distanceapplication.service.implementation;
 
 import lombok.AllArgsConstructor;
+
 import org.example.distanceapplication.entity.CityInfo;
 import org.example.distanceapplication.repository.CityData;
 import org.example.distanceapplication.service.DataService;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-
 @Service
 @AllArgsConstructor
 public class DataServiceImpl implements DataService {

@@ -1,8 +1,8 @@
 package org.example.distanceapplication.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
+import lombok.Data;
 @Entity(name = "geoposition")
 @Table(name = "geoposition")
 @Data

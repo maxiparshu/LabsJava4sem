@@ -2,11 +2,11 @@ package org.example.distanceapplication.service.implementation;
 
 import org.example.distanceapplication.entity.CityInfo;
 import org.example.distanceapplication.service.DistanceService;
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
 @Service
 public class DistanceServiceImpl implements DistanceService {
     @Override
