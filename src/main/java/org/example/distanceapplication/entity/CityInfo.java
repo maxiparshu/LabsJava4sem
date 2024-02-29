@@ -9,6 +9,8 @@ import lombok.Data;
 public class CityInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id")
+    Long id;
     @Column(name = "city_name")
     String name;
     @Column(name = "latitude")
