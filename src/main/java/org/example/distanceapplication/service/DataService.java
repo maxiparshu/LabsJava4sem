@@ -9,4 +9,5 @@ import java.util.List;
 public interface DataService {
     List<CityInfo> getAll();
     CityInfo getCityInfoByName(String name);
+    CityInfo addNewCity(CityInfo city);
 }

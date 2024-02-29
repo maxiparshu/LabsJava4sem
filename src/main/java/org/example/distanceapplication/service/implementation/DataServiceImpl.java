@@ -13,14 +13,18 @@ import java.util.List;
 @AllArgsConstructor
 public class DataServiceImpl implements DataService {
     private final CityData repository;
+
     @Override
     public List<CityInfo> getAll() {
         return repository.findAll();
     }
-
     @Override
     public CityInfo getCityInfoByName(String name) {
         var optionalCity = repository.getCityInfoByName(name);
         return optionalCity.orElse(null);
+    }
+    @Override
+    public CityInfo addNewCity(CityInfo city) {
+        return repository.save(city);
     }
 }

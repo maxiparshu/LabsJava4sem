@@ -24,10 +24,13 @@ public class Controller {
     }
     @GetMapping(value = "/info/", produces = "application/json")
     public ResponseEntity<CityInfo> getCityInfo(@RequestParam(name = "city") String cityName){
-        return new ResponseEntity<>(dataService.getCityInfoByName(cityName), HttpStatus.OK);
+        var cityInfo = dataService.getCityInfoByName(cityName);
+        if (cityInfo == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
     @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
-    public ResponseEntity<HashMap<String, String>> getDistance(@PathVariable String firstCity, @PathVariable String secondCity){
+    public ResponseEntity<HashMap<String, String>> getDistance(@PathVariable(name = "firstCity") String firstCity, @PathVariable(name = "secondCity") String secondCity){
         var firstCityInfo = dataService.getCityInfoByName(firstCity);
         var secondCityInfo = dataService.getCityInfoByName(secondCity);
         double distance = distanceService.getDistanceInKilometres(firstCityInfo, secondCityInfo);
@@ -36,6 +39,12 @@ public class Controller {
         objects.put("Second city info", secondCityInfo.toString());
         objects.put("Distance", Double.toString(distance));
         return new ResponseEntity<>(objects,HttpStatus.OK);
+    }
+    @PostMapping(value = "/add")
+    public CityInfo addCityInfo(@RequestBody CityInfo newCity){
+        if (dataService.getCityInfoByName(newCity.getName()) != null)
+            return null;
+        return dataService.addNewCity(newCity);
     }
 
 }
