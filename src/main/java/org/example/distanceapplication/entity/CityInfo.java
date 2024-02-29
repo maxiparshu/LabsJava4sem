@@ -3,7 +3,7 @@ package org.example.distanceapplication.entity;
 import jakarta.persistence.*;
 
 import lombok.Data;
-@Entity(name = "geoposition")
+@Entity
 @Table(name = "geoposition")
 @Data
 public class CityInfo {
