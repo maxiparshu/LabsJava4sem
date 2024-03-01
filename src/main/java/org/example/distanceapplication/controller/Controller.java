@@ -6,7 +6,6 @@ import org.example.distanceapplication.entity.CityInfo;
 import org.example.distanceapplication.service.DataService;
 import org.example.distanceapplication.service.DistanceService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +40,7 @@ public class Controller {
         objects.put("Distance", Double.toString(distance));
         return new ResponseEntity<>(objects,HttpStatus.OK);
     }
-    @PostMapping(value = "/add")
+    @PutMapping(value = "/add")
     public CityInfo addCityInfo(@RequestBody CityInfo newCity){
         if (dataService.getCityInfoByName(newCity.getName()) != null)
             return null;
