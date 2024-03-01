@@ -30,15 +30,18 @@ public class Controller {
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
     @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
-    public ResponseEntity<HashMap<String, String>> getDistance(@PathVariable(name = "firstCity") String firstCity, @PathVariable(name = "secondCity") String secondCity){
+    public ResponseEntity<?> getDistance(@PathVariable(name = "firstCity") String firstCity, @PathVariable(name = "secondCity") String secondCity){
         var firstCityInfo = dataService.getCityInfoByName(firstCity);
         var secondCityInfo = dataService.getCityInfoByName(secondCity);
         double distance = distanceService.getDistanceInKilometres(firstCityInfo, secondCityInfo);
-        var objects = new HashMap<String,String>();
-        objects.put("First city info", firstCityInfo.toString());
-        objects.put("Second city info", secondCityInfo.toString());
-        objects.put("Distance", Double.toString(distance));
-        return new ResponseEntity<>(objects,HttpStatus.OK);
+        if (distance != -1) {
+            var objects = new HashMap<String, String>();
+            objects.put("First city info", firstCityInfo.toString());
+            objects.put("Second city info", secondCityInfo.toString());
+            objects.put("Distance", Double.toString(distance));
+            return new ResponseEntity<>(objects, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     @PutMapping(value = "/add")
     public CityInfo addCityInfo(@RequestBody CityInfo newCity){
