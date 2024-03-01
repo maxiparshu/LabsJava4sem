@@ -3,7 +3,7 @@ package org.example.distanceapplication.service.implementation;
 import lombok.AllArgsConstructor;
 
 import org.example.distanceapplication.entity.CityInfo;
-import org.example.distanceapplication.repository.CityData;
+import org.example.distanceapplication.repository.CityRepository;
 import org.example.distanceapplication.service.DataService;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class DataServiceImpl implements DataService {
-    private final CityData repository;
+    private final CityRepository repository;
 
     @Override
     public List<CityInfo> getAll() {

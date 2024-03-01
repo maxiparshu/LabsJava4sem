@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import lombok.Data;
 @Entity
-@Table(name = "geoposition")
+@Table(name = "city_info")
 @Data
 public class CityInfo {
     @Id

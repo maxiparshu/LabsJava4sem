@@ -14,7 +14,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
-public class Controller {
+public class ControllerCityInfo {
     private final DataService dataService;
     private final DistanceService distanceService;
 
