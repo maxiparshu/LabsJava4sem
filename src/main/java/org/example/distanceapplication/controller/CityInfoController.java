@@ -11,26 +11,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
-public class ControllerCityInfo {
+public class CityInfoController {
     private final DataService dataService;
     private final DistanceService distanceService;
 
     @GetMapping(value = "/all", produces = "application/json")
-    public ResponseEntity<List<CityInfo>> getAllCity(){
+    public ResponseEntity<List<CityInfo>> getAllCity() {
         return new ResponseEntity<>(dataService.getAll(), HttpStatus.OK);
     }
+
     @GetMapping(value = "/info/", produces = "application/json")
-    public ResponseEntity<CityInfo> getCityInfo(@RequestParam(name = "city") String cityName){
+    public ResponseEntity<CityInfo> getCityInfo(@RequestParam(name = "city") String cityName) {
         var cityInfo = dataService.getCityInfoByName(cityName);
-        if (cityInfo == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (cityInfo == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
+
     @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
-    public ResponseEntity<?> getDistance(@PathVariable(name = "firstCity") String firstCity, @PathVariable(name = "secondCity") String secondCity){
+    public ResponseEntity<?> getDistance(@PathVariable(name = "firstCity") String firstCity, @PathVariable(name = "secondCity") String secondCity) {
         var firstCityInfo = dataService.getCityInfoByName(firstCity);
         var secondCityInfo = dataService.getCityInfoByName(secondCity);
         double distance = distanceService.getDistanceInKilometres(firstCityInfo, secondCityInfo);
@@ -43,10 +45,10 @@ public class ControllerCityInfo {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @PutMapping(value = "/add")
-    public CityInfo addCityInfo(@RequestBody CityInfo newCity){
-        if (dataService.getCityInfoByName(newCity.getName()) != null)
-            return null;
+    public CityInfo addCityInfo(@RequestBody CityInfo newCity) {
+        if (dataService.getCityInfoByName(newCity.getName()) != null) return null;
         return dataService.addNewCity(newCity);
     }
 

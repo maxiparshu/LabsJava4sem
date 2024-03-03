@@ -7,8 +7,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+
 @Repository
 public interface CityRepository extends JpaRepository<CityInfo, Long> {
-    Optional<CityInfo> getCityInfoByName(@Param("city_name") String name);
+    Optional<CityInfo> getCityInfoByName(@Param("name") String name);
 
 }

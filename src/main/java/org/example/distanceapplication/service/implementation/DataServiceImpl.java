@@ -9,6 +9,7 @@ import org.example.distanceapplication.service.DataService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class DataServiceImpl implements DataService {
@@ -18,11 +19,13 @@ public class DataServiceImpl implements DataService {
     public List<CityInfo> getAll() {
         return repository.findAll();
     }
+
     @Override
     public CityInfo getCityInfoByName(String name) {
         var optionalCity = repository.getCityInfoByName(name);
         return optionalCity.orElse(null);
     }
+
     @Override
     public CityInfo addNewCity(CityInfo city) {
         return repository.save(city);

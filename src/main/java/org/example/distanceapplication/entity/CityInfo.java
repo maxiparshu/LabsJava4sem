@@ -3,6 +3,7 @@ package org.example.distanceapplication.entity;
 import jakarta.persistence.*;
 
 import lombok.Data;
+
 @Entity
 @Table(name = "city_info")
 @Data
@@ -11,7 +12,7 @@ public class CityInfo {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
     Long id;
-    @Column(name = "city_name")
+    @Column(name = "name")
     String name;
     @Column(name = "latitude")
     Double latitude;
@@ -19,7 +20,8 @@ public class CityInfo {
     Double longitude;
 
     @Override
-    public String toString(){
-        return name + String.format( " (latitude: %.4f)", latitude) + String.format( " (longitude: %.4f)", longitude);
+    public String toString() {
+        return name + String.format(" (latitude: %.4f)", latitude)
+                + String.format(" (longitude: %.4f)", longitude);
     }
 }

@@ -5,9 +5,12 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+
 @Service
 public interface DataService {
     List<CityInfo> getAll();
+
     CityInfo getCityInfoByName(String name);
+
     CityInfo addNewCity(CityInfo city);
 }
