@@ -27,7 +27,8 @@ public class DataServiceImpl implements DataService {
     }
 
     @Override
-    public CityInfo addNewCity(CityInfo city) {
+    public CityInfo updateCityInfo(CityInfo city) {
         return repository.save(city);
     }
+
 }

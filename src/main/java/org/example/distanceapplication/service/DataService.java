@@ -12,5 +12,6 @@ public interface DataService {
 
     CityInfo getCityInfoByName(String name);
 
-    CityInfo addNewCity(CityInfo city);
+    CityInfo updateCityInfo(CityInfo city);
+
 }

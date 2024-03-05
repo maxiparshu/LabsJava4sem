@@ -24,7 +24,7 @@ public class CityInfoController {
         return new ResponseEntity<>(dataService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/info/", produces = "application/json")
+    @GetMapping(value = "/info", produces = "application/json")
     public ResponseEntity<CityInfo> getCityInfo(@RequestParam(name = "city") String cityName) {
         var cityInfo = dataService.getCityInfoByName(cityName);
         if (cityInfo == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -49,7 +49,11 @@ public class CityInfoController {
     @PutMapping(value = "/add")
     public CityInfo addCityInfo(@RequestBody CityInfo newCity) {
         if (dataService.getCityInfoByName(newCity.getName()) != null) return null;
-        return dataService.addNewCity(newCity);
+        return dataService.updateCityInfo(newCity);
     }
-
+    @PatchMapping(value = "/update")
+    public CityInfo updateCityInfo(@RequestBody CityInfo newCity) {
+        if (dataService.getCityInfoByName(newCity.getName()) == null) return null;
+        return dataService.updateCityInfo(newCity);
+    }
 }
