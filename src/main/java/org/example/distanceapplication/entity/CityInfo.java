@@ -18,10 +18,7 @@ public class CityInfo {
     Double latitude;
     @Column(name = "longitude")
     Double longitude;
+    @Column(name = "id_country")
+    Integer id_country;
 
-    @Override
-    public String toString() {
-        return name + String.format(" id(%d)", id) + String.format(" (latitude: %.4f)", latitude)
-                    + String.format(" (longitude: %.4f)", longitude);
-    }
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/cities")
 @AllArgsConstructor
 public class CityInfoController {
     private final DataService dataService;
