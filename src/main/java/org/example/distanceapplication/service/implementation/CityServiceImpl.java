@@ -19,15 +19,15 @@ public class CityServiceImpl implements DataService<CityInfo> {
     private final CityRepository repository;
 
     private long findFreeID() {
-        var list = this.read();
-        int i = 1;
+        var list = read();
+        long i = 1;
         for (CityInfo cityInfo : list) {
             if (cityInfo.getId() != i) {
                 return i;
             }
             i++;
         }
-        return list.size() + 1;
+        return i + 1;
     }
 
     public boolean createWithCountry(CityDTO city, Country country) {

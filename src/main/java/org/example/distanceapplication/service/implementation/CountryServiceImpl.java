@@ -21,14 +21,14 @@ public class CountryServiceImpl implements DataService<Country> {
 
     private long findFreeID() {
         var list = read();
-        int i = 1;
+        long i = 1;
         for (Country country : list) {
             if (country.getId() != i) {
                 return i;
             }
             i++;
         }
-        return list.size() + 1;
+        return i + 1;
     }
 
     @Override
