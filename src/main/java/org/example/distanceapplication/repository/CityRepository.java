@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface CityRepository extends JpaRepository<CityInfo, Long> {
     Optional<CityInfo> getCityInfoByName(@Param("name") String name);
 
+    Optional<CityInfo> getCityInfoById(@Param("id") Long id);
 }

@@ -2,10 +2,12 @@ package org.example.distanceapplication.controller;
 
 import lombok.AllArgsConstructor;
 
+import org.example.distanceapplication.dto.CityDTO;
 import org.example.distanceapplication.entity.CityInfo;
-import org.example.distanceapplication.service.DataService;
 import org.example.distanceapplication.service.DistanceService;
 
+import org.example.distanceapplication.service.implementation.CityServiceImpl;
+import org.example.distanceapplication.service.implementation.CountryServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,25 +18,33 @@ import java.util.*;
 @RequestMapping("/api/cities")
 @AllArgsConstructor
 public class CityInfoController {
-    private final DataService dataService;
+    private final CityServiceImpl dataService;
     private final DistanceService distanceService;
+    private final CountryServiceImpl countryService;
 
     @GetMapping(value = "/all", produces = "application/json")
     public ResponseEntity<List<CityInfo>> getAllCity() {
-        return new ResponseEntity<>(dataService.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(dataService.read(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/info", produces = "application/json")
     public ResponseEntity<CityInfo> getCityInfo(@RequestParam(name = "city") String cityName) {
-        var cityInfo = dataService.getCityInfoByName(cityName);
+        var cityInfo = dataService.getByName(cityName);
+        if (cityInfo == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(cityInfo, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/find", produces = "application/json")
+    public ResponseEntity<CityInfo> getCityInfoById(@RequestParam(name = "id") Long id) {
+        var cityInfo = dataService.getByID(id);
         if (cityInfo == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
 
     @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
     public ResponseEntity<?> getDistance(@PathVariable(name = "firstCity") String firstCity, @PathVariable(name = "secondCity") String secondCity) {
-        var firstCityInfo = dataService.getCityInfoByName(firstCity);
-        var secondCityInfo = dataService.getCityInfoByName(secondCity);
+        var firstCityInfo = dataService.getByName(firstCity);
+        var secondCityInfo = dataService.getByName(secondCity);
         double distance = distanceService.getDistanceInKilometres(firstCityInfo, secondCityInfo);
         if (distance != -1) {
             var objects = new HashMap<String, String>();
@@ -46,14 +56,30 @@ public class CityInfoController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping(value = "/add")
-    public CityInfo addCityInfo(@RequestBody CityInfo newCity) {
-        if (dataService.getCityInfoByName(newCity.getName()) != null) return null;
-        return dataService.updateCityInfo(newCity);
+    @PutMapping("/update/{countryName}")
+    private HttpStatus update(@RequestBody CityInfo city, @PathVariable(name = "countryName") String countryName) {
+        var country = countryService.getByName(countryName);
+        if (country == null)
+            return HttpStatus.NOT_FOUND;
+        if (Boolean.TRUE.equals(dataService.updateWithCountry(city, country)))
+            return HttpStatus.OK;
+        return HttpStatus.BAD_REQUEST;
     }
-    @PatchMapping(value = "/update")
-    public CityInfo updateCityInfo(@RequestBody CityInfo newCity) {
-        if (dataService.getCityInfoByName(newCity.getName()) == null) return null;
-        return dataService.updateCityInfo(newCity);
+
+    @PostMapping("/create/{countryName}")
+    private HttpStatus create(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName) {
+        var country = countryService.getByName(countryName);
+        if (country == null)
+            return HttpStatus.NOT_FOUND;
+        if (Boolean.TRUE.equals(dataService.createWithCountry(city, country)))
+            return HttpStatus.OK;
+        return HttpStatus.BAD_REQUEST;
+    }
+
+    @DeleteMapping("/delete")
+    private HttpStatus delete(@RequestParam(name = "id") Long id) {
+        if (Boolean.TRUE.equals(dataService.delete(id)))
+            return HttpStatus.OK;
+        return HttpStatus.NOT_FOUND;
     }
 }

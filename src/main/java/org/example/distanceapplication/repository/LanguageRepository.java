@@ -1,6 +1,6 @@
 package org.example.distanceapplication.repository;
 
-import org.example.distanceapplication.entity.Country;
+import org.example.distanceapplication.entity.Language;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CountryRepository extends JpaRepository<Country, Long> {
-    Optional<Country> getByName(@Param("name") String name);
+public interface LanguageRepository extends JpaRepository<Language, Long> {
+    Optional<Language> getByName(@Param("name") String name);
 
-    Optional<Country> getCountryById(@Param("id") Long id);
+    Optional<Language> getLanguageById(@Param("id") Long id);
 }

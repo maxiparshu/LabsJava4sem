@@ -1,17 +1,21 @@
 package org.example.distanceapplication.service;
 
-import org.example.distanceapplication.entity.CityInfo;
 import org.springframework.stereotype.Service;
 
 
 import java.util.List;
 
 @Service
-public interface DataService {
-    List<CityInfo> getAll();
+public interface DataService<T> {
+    boolean create(T entity);
 
-    CityInfo getCityInfoByName(String name);
+    List<T> read();
 
-    CityInfo updateCityInfo(CityInfo city);
+    T getByName(String name);
 
+    T getByID(Long id);
+
+    boolean update(T entity);
+
+    boolean delete(Long id);
 }
