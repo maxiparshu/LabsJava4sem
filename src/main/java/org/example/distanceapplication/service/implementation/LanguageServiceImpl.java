@@ -1,12 +1,14 @@
 package org.example.distanceapplication.service.implementation;
 
 import lombok.AllArgsConstructor;
+import org.example.distanceapplication.dto.LanguageDTO;
 import org.example.distanceapplication.entity.Language;
 import org.example.distanceapplication.repository.LanguageRepository;
 import org.example.distanceapplication.service.DataService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,6 +53,19 @@ public class LanguageServiceImpl implements DataService<Language> {
         if (getByID(id) != null) {
             repository.deleteById(id);
             return true;
+        }
+        return false;
+    }
+
+    public boolean update(LanguageDTO language){
+        if (language.getId() == null)
+            return false;
+        return update(Language.builder().name(language.getName()).countries(new ArrayList<>()).id(language.getId()).build());
+    }
+
+    public boolean create(LanguageDTO language){
+        if (repository.getByName(language.getName()).isEmpty()){
+            return create(Language.builder().name(language.getName()).countries(new ArrayList<>()).build());
         }
         return false;
     }
