@@ -34,7 +34,6 @@ public class CityServiceImpl implements DataService<CityInfo> {
         if (getByName(city.getName()) == null) {
             var newCity = CityInfo.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).country(country).id(findFreeID()).build();
-            System.out.println(newCity);
             repository.save(newCity);
             return true;
         }

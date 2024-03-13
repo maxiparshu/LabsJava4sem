@@ -99,7 +99,6 @@ public class CountryServiceImpl implements DataService<Country> {
                 .id(country.getId()).build();
         for (Language language : newLanguages) {
             updatedCountry.addLanguage(language);
-            System.out.println(language.getId() + " " + language.getName());
         }
         return update(updatedCountry);
     }
