@@ -18,6 +18,7 @@ import java.util.List;
 @Table(name = "language")
 public class Language {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
