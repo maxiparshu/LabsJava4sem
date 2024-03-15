@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class LanguageServiceImpl implements DataService<Language> {
     private final LanguageRepository repository;
+
     @Override
     public boolean create(Language language) {
         if (getByID(language.getId()) == null) {
@@ -57,14 +58,14 @@ public class LanguageServiceImpl implements DataService<Language> {
         return false;
     }
 
-    public boolean update(LanguageDTO language){
+    public boolean update(LanguageDTO language) {
         if (language.getId() == null)
             return false;
         return update(Language.builder().name(language.getName()).countries(new ArrayList<>()).id(language.getId()).build());
     }
 
-    public boolean create(LanguageDTO language){
-        if (repository.getByName(language.getName()).isEmpty()){
+    public boolean create(LanguageDTO language) {
+        if (repository.getByName(language.getName()).isEmpty()) {
             return create(Language.builder().name(language.getName()).countries(new ArrayList<>()).build());
         }
         return false;
