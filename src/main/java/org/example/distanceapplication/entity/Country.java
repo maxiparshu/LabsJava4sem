@@ -29,7 +29,7 @@ public class Country {
 
     @OneToMany(mappedBy = "country", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<CityInfo> cities = new ArrayList<>();
+    private List<City> cities = new ArrayList<>();
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "language_country",
             joinColumns = {@JoinColumn(name = "id_country")},

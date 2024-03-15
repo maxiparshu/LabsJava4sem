@@ -3,7 +3,7 @@ package org.example.distanceapplication.service.implementation;
 import lombok.AllArgsConstructor;
 
 import org.example.distanceapplication.dto.CityDTO;
-import org.example.distanceapplication.entity.CityInfo;
+import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.repository.CityRepository;
 import org.example.distanceapplication.service.DataService;
@@ -15,13 +15,13 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class CityServiceImpl implements DataService<CityInfo> {
+public class CityServiceImpl implements DataService<City> {
     private final CityRepository repository;
 
     private long findFreeID() {
         var list = read();
         long i = 1;
-        for (CityInfo cityInfo : list) {
+        for (City cityInfo : list) {
             if (cityInfo.getId() != i) {
                 return i;
             }
@@ -32,7 +32,7 @@ public class CityServiceImpl implements DataService<CityInfo> {
 
     public boolean createWithCountry(CityDTO city, Country country) {
         if (getByName(city.getName()) == null) {
-            var newCity = CityInfo.builder().name(city.getName()).latitude(city.getLatitude())
+            var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).country(country).id(findFreeID()).build();
             repository.save(newCity);
             return true;
@@ -41,7 +41,7 @@ public class CityServiceImpl implements DataService<CityInfo> {
     }
 
     @Override
-    public boolean create(CityInfo city) {
+    public boolean create(City city) {
         if (getByID(city.getId()) == null) {
             repository.save(city);
             return true;
@@ -49,9 +49,9 @@ public class CityServiceImpl implements DataService<CityInfo> {
         return false;
     }
 
-    public boolean updateWithCountry(CityInfo city, Country country) {
+    public boolean updateWithCountry(City city, Country country) {
         if (getByID(city.getId()) != null) {
-            var newCity = CityInfo.builder().name(city.getName()).latitude(city.getLatitude())
+            var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).id(city.getId()).country(country).build();
             repository.save(newCity);
             return true;
@@ -60,23 +60,23 @@ public class CityServiceImpl implements DataService<CityInfo> {
     }
 
     @Override
-    public List<CityInfo> read() {
+    public List<City> read() {
         return repository.findAll(Sort.by("id"));
     }
 
     @Override
-    public CityInfo getByName(String name) {
+    public City getByName(String name) {
         var optionalCity = repository.getCityInfoByName(name);
         return optionalCity.orElse(null);
     }
 
     @Override
-    public CityInfo getByID(Long id) {
+    public City getByID(Long id) {
         return repository.getCityInfoById(id).orElse(null);
     }
 
     @Override
-    public boolean update(CityInfo city) {
+    public boolean update(City city) {
         if (getByID(city.getId()) != null) {
             repository.save(city);
             return true;

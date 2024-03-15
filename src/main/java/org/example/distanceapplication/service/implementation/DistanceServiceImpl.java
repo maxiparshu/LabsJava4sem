@@ -1,6 +1,6 @@
 package org.example.distanceapplication.service.implementation;
 
-import org.example.distanceapplication.entity.CityInfo;
+import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.service.DistanceService;
 
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.math.RoundingMode;
 @Service
 public class DistanceServiceImpl implements DistanceService {
     @Override
-    public double getDistanceInKilometres(CityInfo first, CityInfo second) {
+    public double getDistanceInKilometres(City first, City second) {
         if (first == null || second == null)
             return -1.0;
         if (first.getName().equalsIgnoreCase(second.getName()))

@@ -3,7 +3,7 @@ package org.example.distanceapplication.controller;
 import lombok.AllArgsConstructor;
 
 import org.example.distanceapplication.dto.CityDTO;
-import org.example.distanceapplication.entity.CityInfo;
+import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.service.DistanceService;
 
 import org.example.distanceapplication.service.implementation.CityServiceImpl;
@@ -17,25 +17,25 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/cities")
 @AllArgsConstructor
-public class CityInfoController {
+public class CityController {
     private final CityServiceImpl dataService;
     private final DistanceService distanceService;
     private final CountryServiceImpl countryService;
 
     @GetMapping(value = "/all", produces = "application/json")
-    public ResponseEntity<List<CityInfo>> getAllCity() {
+    public ResponseEntity<List<City>> getAllCity() {
         return new ResponseEntity<>(dataService.read(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/info", produces = "application/json")
-    public ResponseEntity<CityInfo> getCityInfo(@RequestParam(name = "city") String cityName) {
+    public ResponseEntity<City> getCityInfo(@RequestParam(name = "city") String cityName) {
         var cityInfo = dataService.getByName(cityName);
         if (cityInfo == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
 
     @GetMapping(value = "/find", produces = "application/json")
-    public ResponseEntity<CityInfo> getCityInfoById(@RequestParam(name = "id") Long id) {
+    public ResponseEntity<City> getCityInfoById(@RequestParam(name = "id") Long id) {
         var cityInfo = dataService.getByID(id);
         if (cityInfo == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
@@ -57,7 +57,7 @@ public class CityInfoController {
     }
 
     @PutMapping("/update/{countryName}")
-    private HttpStatus update(@RequestBody CityInfo city, @PathVariable(name = "countryName") String countryName) {
+    private HttpStatus update(@RequestBody City city, @PathVariable(name = "countryName") String countryName) {
         var country = countryService.getByName(countryName);
         if (country == null)
             return HttpStatus.NOT_FOUND;

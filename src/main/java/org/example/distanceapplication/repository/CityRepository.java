@@ -1,6 +1,6 @@
 package org.example.distanceapplication.repository;
 
-import org.example.distanceapplication.entity.CityInfo;
+import org.example.distanceapplication.entity.City;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CityRepository extends JpaRepository<CityInfo, Long> {
-    Optional<CityInfo> getCityInfoByName(@Param("name") String name);
+public interface CityRepository extends JpaRepository<City, Long> {
+    Optional<City> getCityInfoByName(@Param("name") String name);
 
-    Optional<CityInfo> getCityInfoById(@Param("id") Long id);
+    Optional<City> getCityInfoById(@Param("id") Long id);
 }
