@@ -110,7 +110,7 @@ public class CountryServiceImpl implements DataService<Country> {
                 var tempLanguage = languageRepository.getByName(language);
                 tempLanguage.ifPresent(!deleteFlag ? country::addLanguage : country::removeLanguage);
             }
-            return this.update(country);
+            return update(country);
         }
         return false;
     }

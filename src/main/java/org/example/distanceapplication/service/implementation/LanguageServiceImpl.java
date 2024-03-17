@@ -2,6 +2,7 @@ package org.example.distanceapplication.service.implementation;
 
 import lombok.AllArgsConstructor;
 import org.example.distanceapplication.dto.LanguageDTO;
+import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.entity.Language;
 import org.example.distanceapplication.repository.LanguageRepository;
 import org.example.distanceapplication.service.DataService;
@@ -51,8 +52,12 @@ public class LanguageServiceImpl implements DataService<Language> {
 
     @Override
     public boolean delete(Long id) {
-        if (getByID(id) != null) {
-            repository.deleteById(id);
+        Language language;
+        if ((language = getByID(id)) != null) {
+            List<Country> existingCountries = language.getCountries();
+            for (Country country : existingCountries)
+                country.removeLanguage(language);
+            repository.delete(language);
             return true;
         }
         return false;
