@@ -28,6 +28,4 @@ public class Language {
     @ManyToMany(mappedBy = "languages", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JsonBackReference
     List<Country> countries = new ArrayList<>();
-
-
 }
