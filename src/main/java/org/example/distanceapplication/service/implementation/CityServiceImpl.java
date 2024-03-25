@@ -2,6 +2,7 @@ package org.example.distanceapplication.service.implementation;
 
 import lombok.AllArgsConstructor;
 
+import org.example.distanceapplication.cache.LRUCache;
 import org.example.distanceapplication.dto.CityDTO;
 import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.entity.Country;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CityServiceImpl implements DataService<City> {
     private final CityRepository repository;
-
+    private final LRUCache<Long, City> cache;
     private long findFreeID() {
         var list = read();
         long i = 1;
@@ -35,6 +36,7 @@ public class CityServiceImpl implements DataService<City> {
             var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).country(country).id(findFreeID()).build();
             repository.save(newCity);
+            cache.put(newCity.getId(),newCity);
             return true;
         }
         return false;
@@ -44,6 +46,7 @@ public class CityServiceImpl implements DataService<City> {
     public boolean create(City city) {
         if (getByID(city.getId()) == null) {
             repository.save(city);
+            cache.put(city.getId(), city);
             return true;
         }
         return false;
@@ -51,9 +54,11 @@ public class CityServiceImpl implements DataService<City> {
 
     public boolean updateWithCountry(CityDTO city, Country country) {
         if (getByID(city.getId()) != null) {
+            cache.remove(city.getId());
             var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).country(country).build();
             repository.save(newCity);
+            cache.put(newCity.getId(), newCity);
             return true;
         }
         return false;
@@ -67,18 +72,25 @@ public class CityServiceImpl implements DataService<City> {
     @Override
     public City getByName(String name) {
         var optionalCity = repository.getCityInfoByName(name);
+        optionalCity.ifPresent(city -> cache.put(city.getId(), city));
         return optionalCity.orElse(null);
     }
 
     @Override
     public City getByID(Long id) {
-        return repository.getCityInfoById(id).orElse(null);
+        var optionalCity = cache.get(id);
+        if (optionalCity.isEmpty())
+            optionalCity = repository.getCityInfoById(id);
+        optionalCity.ifPresent(city -> cache.put(id, city));
+        return optionalCity.orElse(null);
     }
 
     @Override
     public boolean update(City city) {
         if (getByID(city.getId()) != null) {
+            cache.remove(city.getId());
             repository.save(city);
+            cache.put(city.getId(), city);
             return true;
         }
         return false;
@@ -88,6 +100,7 @@ public class CityServiceImpl implements DataService<City> {
     public boolean delete(Long id) {
         if (this.getByID(id) != null) {
             repository.deleteById(id);
+            cache.remove(id);
             return true;
         }
         return false;
