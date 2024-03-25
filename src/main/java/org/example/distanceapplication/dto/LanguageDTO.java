@@ -8,5 +8,4 @@ import java.util.List;
 public class LanguageDTO {
     private String name;
     private Long id;
-    private List<String> countries;
 }
