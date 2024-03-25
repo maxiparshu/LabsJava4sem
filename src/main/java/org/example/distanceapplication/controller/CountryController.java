@@ -40,7 +40,6 @@ public class CountryController {
         if (Boolean.TRUE.equals(countryService.updateWithExist(countryDTO)))
             return HttpStatus.OK;
         return HttpStatus.BAD_REQUEST;
-
     }
 
     @PostMapping("/create")

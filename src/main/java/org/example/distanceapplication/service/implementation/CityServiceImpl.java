@@ -49,10 +49,10 @@ public class CityServiceImpl implements DataService<City> {
         return false;
     }
 
-    public boolean updateWithCountry(City city, Country country) {
+    public boolean updateWithCountry(CityDTO city, Country country) {
         if (getByID(city.getId()) != null) {
             var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
-                    .longitude(city.getLongitude()).id(city.getId()).country(country).build();
+                    .longitude(city.getLongitude()).country(country).build();
             repository.save(newCity);
             return true;
         }

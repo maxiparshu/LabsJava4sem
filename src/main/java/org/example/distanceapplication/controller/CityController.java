@@ -57,7 +57,7 @@ public class CityController {
     }
 
     @PutMapping("/update/{countryName}")
-    private HttpStatus update(@RequestBody City city, @PathVariable(name = "countryName") String countryName) {
+    private HttpStatus update(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName) {
         var country = countryService.getByName(countryName);
         if (country == null)
             return HttpStatus.NOT_FOUND;
@@ -65,7 +65,6 @@ public class CityController {
             return HttpStatus.OK;
         return HttpStatus.BAD_REQUEST;
     }
-
     @PostMapping("/create/{countryName}")
     private HttpStatus create(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName) {
         var country = countryService.getByName(countryName);
