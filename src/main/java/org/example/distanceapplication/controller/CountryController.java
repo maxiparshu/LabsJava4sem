@@ -58,16 +58,24 @@ public class CountryController {
     }
 
     @PutMapping("/add_language")
-    public HttpStatus addLanguages(@RequestBody CountryDTO countryDTO) {
+    private HttpStatus addLanguages(@RequestBody CountryDTO countryDTO) {
         if (Boolean.TRUE.equals(countryService.modifyLanguage(countryDTO, false)))
             return HttpStatus.OK;
         return HttpStatus.BAD_REQUEST;
     }
 
     @PutMapping("/delete_language")
-    public HttpStatus deleteLanguages(@RequestBody CountryDTO countryDTO) {
+    private HttpStatus deleteLanguages(@RequestBody CountryDTO countryDTO) {
         if (Boolean.TRUE.equals(countryService.modifyLanguage(countryDTO, true)))
             return HttpStatus.OK;
         return HttpStatus.BAD_REQUEST;
+    }
+
+    @GetMapping("/getByLanguage")
+    private ResponseEntity<List<Country>> getCountriesByLanguage(@RequestParam(name = "id") Integer idLanguage) {
+        var countries = countryService.getByLanguage(idLanguage);
+        if (countries == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(countries, HttpStatus.OK);
     }
 }

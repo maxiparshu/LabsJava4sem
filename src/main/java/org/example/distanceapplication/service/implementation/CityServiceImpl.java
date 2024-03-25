@@ -19,6 +19,7 @@ import java.util.List;
 public class CityServiceImpl implements DataService<City> {
     private final CityRepository repository;
     private final LRUCache<Long, City> cache;
+
     private long findFreeID() {
         var list = read();
         long i = 1;
@@ -36,7 +37,7 @@ public class CityServiceImpl implements DataService<City> {
             var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).country(country).id(findFreeID()).build();
             repository.save(newCity);
-            cache.put(newCity.getId(),newCity);
+            cache.put(newCity.getId(), newCity);
             return true;
         }
         return false;
@@ -106,4 +107,8 @@ public class CityServiceImpl implements DataService<City> {
         return false;
     }
 
+    public List<City> getBetweenLatitudes
+            (Double first, Double second) {
+        return repository.findAllCityWithLatitudeBetween(first, second);
+    }
 }

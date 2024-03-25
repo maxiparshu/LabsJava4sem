@@ -1,7 +1,9 @@
 package org.example.distanceapplication.service.implementation;
 
 import lombok.AllArgsConstructor;
+import org.example.distanceapplication.cache.LRUCache;
 import org.example.distanceapplication.dto.CountryDTO;
+import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.entity.Language;
 import org.example.distanceapplication.repository.CountryRepository;
@@ -12,12 +14,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class CountryServiceImpl implements DataService<Country> {
     private final CountryRepository countryRepository;
     private final LanguageRepository languageRepository;
+
+    private final LRUCache<Long, Country> cache;
 
     private long findFreeID() {
         var list = read();
@@ -34,6 +39,7 @@ public class CountryServiceImpl implements DataService<Country> {
     @Override
     public boolean create(Country country) {
         if (getByName(country.getName()) == null) {
+            cache.put(country.getId(), country);
             countryRepository.save(country);
             return true;
         }
@@ -47,19 +53,27 @@ public class CountryServiceImpl implements DataService<Country> {
 
     @Override
     public Country getByName(String name) {
-        return countryRepository.getByName(name).orElse(null);
+        var optionalCountry = countryRepository.getByName(name);
+        optionalCountry.ifPresent(country -> cache.put(country.getId(), country));
+        return optionalCountry.orElse(null);
     }
 
 
     @Override
     public Country getByID(Long id) {
-        return countryRepository.getCountryById(id).orElse(null);
+        var optionalCountry = cache.get(id);
+        if (optionalCountry.isEmpty())
+            optionalCountry = countryRepository.findById(id);
+        optionalCountry.ifPresent(country -> cache.put(id, country));
+        return optionalCountry.orElse(null);
     }
 
     @Override
     public boolean update(Country country) {
         if (getByID(country.getId()) != null) {
+            cache.remove(country.getId());
             countryRepository.save(country);
+            cache.put(country.getId(), country);
             return true;
         }
         return false;
@@ -69,6 +83,7 @@ public class CountryServiceImpl implements DataService<Country> {
     public boolean delete(Long id) {
         if (this.getByID(id) != null) {
             countryRepository.deleteById(id);
+            cache.remove(id);
             return true;
         }
         return false;
@@ -113,5 +128,12 @@ public class CountryServiceImpl implements DataService<Country> {
             return update(country);
         }
         return false;
+    }
+
+    public List<Country> getByLanguage(Integer languageId) {
+        var optionalLanguage = languageRepository.getLanguageById(Long.valueOf(languageId));
+        if (optionalLanguage.isEmpty())
+            return null;
+        return countryRepository.findAllCountryWithLanguage(languageId);
     }
 }

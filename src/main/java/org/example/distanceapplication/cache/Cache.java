@@ -3,7 +3,7 @@ package org.example.distanceapplication.cache;
 
 import java.util.Optional;
 
-public interface Cache<K,V> {
+public interface Cache<K, V> {
     Optional<V> get(K key);
 
     int size();

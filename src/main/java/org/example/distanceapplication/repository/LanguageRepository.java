@@ -12,4 +12,5 @@ public interface LanguageRepository extends JpaRepository<Language, Long> {
     Optional<Language> getByName(@Param("name") String name);
 
     Optional<Language> getLanguageById(@Param("id") Long id);
+
 }

@@ -1,6 +1,7 @@
 package org.example.distanceapplication.service.implementation;
 
 import lombok.AllArgsConstructor;
+import org.example.distanceapplication.cache.LRUCache;
 import org.example.distanceapplication.dto.LanguageDTO;
 import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.entity.Language;
@@ -16,11 +17,13 @@ import java.util.List;
 @AllArgsConstructor
 public class LanguageServiceImpl implements DataService<Language> {
     private final LanguageRepository repository;
+    private final LRUCache<Long, Language> cache;
 
     @Override
     public boolean create(Language language) {
         if (getByID(language.getId()) == null) {
             repository.save(language);
+            cache.put(language.getId(), language);
             return true;
         }
         return false;
@@ -33,18 +36,26 @@ public class LanguageServiceImpl implements DataService<Language> {
 
     @Override
     public Language getByName(String name) {
-        return repository.getByName(name).orElse(null);
+        var optionalLanguage = repository.getByName(name);
+        optionalLanguage.ifPresent(language -> cache.put(language.getId(), language));
+        return optionalLanguage.orElse(null);
     }
 
     @Override
     public Language getByID(Long id) {
-        return repository.getLanguageById(id).orElse(null);
+        var optionalLanguage = cache.get(id);
+        if (optionalLanguage.isEmpty())
+            optionalLanguage = repository.getLanguageById(id);
+        optionalLanguage.ifPresent(language -> cache.put(id, language));
+        return optionalLanguage.orElse(null);
     }
 
     @Override
     public boolean update(Language language) {
         if (getByID(language.getId()) != null) {
+            cache.remove(language.getId());
             repository.save(language);
+            cache.put(language.getId(), language);
             return true;
         }
         return false;
@@ -58,6 +69,7 @@ public class LanguageServiceImpl implements DataService<Language> {
             for (Country country : existingCountries)
                 country.removeLanguage(language);
             repository.delete(language);
+            cache.remove(id);
             return true;
         }
         return false;

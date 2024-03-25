@@ -65,6 +65,7 @@ public class CityController {
             return HttpStatus.OK;
         return HttpStatus.BAD_REQUEST;
     }
+
     @PostMapping("/create/{countryName}")
     private HttpStatus create(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName) {
         var country = countryService.getByName(countryName);
@@ -80,5 +81,13 @@ public class CityController {
         if (Boolean.TRUE.equals(dataService.delete(id)))
             return HttpStatus.OK;
         return HttpStatus.NOT_FOUND;
+    }
+
+    @GetMapping("/getBetweenLatitude")
+    private ResponseEntity<List<City>> getCitiesBetween
+            (@RequestParam(name = "first") Double first, @RequestParam(name = "second") Double second) {
+        if (first > second)
+            return new ResponseEntity<>(dataService.getBetweenLatitudes(second, first), HttpStatus.OK);
+        return new ResponseEntity<>(dataService.getBetweenLatitudes(first, second), HttpStatus.OK);
     }
 }
