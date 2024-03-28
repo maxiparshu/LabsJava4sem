@@ -13,6 +13,7 @@ import org.example.distanceapplication.service.DataService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -146,7 +147,7 @@ public class CountryServiceImpl implements DataService<Country> {
     public List<Country> getByLanguage(Integer languageId) {
         var optionalLanguage = languageRepository.getLanguageById(Long.valueOf(languageId));
         if (optionalLanguage.isEmpty())
-            return null;
+            return Collections.emptyList();
         return countryRepository.findAllCountryWithLanguage(languageId);
     }
 }
