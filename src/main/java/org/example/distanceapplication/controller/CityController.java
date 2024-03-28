@@ -45,8 +45,9 @@ public class CityController {
     }
 
     @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
-    public ResponseEntity<?> getDistance(@PathVariable(name = "firstCity") String firstCity,
-                                         @PathVariable(name = "secondCity") String secondCity)
+    public ResponseEntity<HashMap<String, String>> getDistance
+            (@PathVariable(name = "firstCity") String firstCity,
+             @PathVariable(name = "secondCity") String secondCity)
             throws ResourceNotFoundException {
         var firstCityInfo = dataService.getByName(firstCity);
         var secondCityInfo = dataService.getByName(secondCity);
