@@ -20,6 +20,7 @@ import java.util.List;
 public class LanguageServiceImpl implements DataService<Language> {
     private final LanguageRepository repository;
     private final LRUCache<Long, Language> cache;
+    private static final String DONT_EXIST = " doesn't exist";
 
     @Override
     public void create(Language language) {
@@ -64,10 +65,9 @@ public class LanguageServiceImpl implements DataService<Language> {
             cache.remove(language.getId());
             repository.save(language);
             cache.put(language.getId(), language);
-        }
-        catch (ResourceNotFoundException e){
+        } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Can't update language with this id = "
-                    + language.getId() + " doesn't exist");
+                    + language.getId() + DONT_EXIST);
         }
     }
 
@@ -80,7 +80,7 @@ public class LanguageServiceImpl implements DataService<Language> {
                 country.removeLanguage(language);
             repository.delete(language);
         } else throw new ResourceNotFoundException("Can't delete language with this id = "
-                + id + " doesn't exist");
+                + id + DONT_EXIST);
     }
 
     public void update(LanguageDTO language) throws ResourceNotFoundException {

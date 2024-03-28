@@ -23,6 +23,7 @@ public class CountryServiceImpl implements DataService<Country> {
     private final LanguageRepository languageRepository;
 
     private final LRUCache<Long, Country> cache;
+    private static final String DONT_EXIST = " doesn't exist";
 
     private long findFreeID() {
         var list = read();
@@ -86,7 +87,7 @@ public class CountryServiceImpl implements DataService<Country> {
             cache.put(country.getId(), country);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Can't update country with this id"
-                    + country.getId() + " doesn't exist");
+                    + country.getId() + DONT_EXIST);
         }
     }
 
@@ -97,7 +98,7 @@ public class CountryServiceImpl implements DataService<Country> {
             countryRepository.deleteById(id);
             cache.remove(id);
         } else throw new ResourceNotFoundException("Can't delete country with this id = "
-                + id + " doesn't exist");
+                + id + DONT_EXIST);
     }
 
     public void create(CountryDTO countryDTO) throws BadRequestException {

@@ -19,6 +19,7 @@ import java.util.List;
 public class CityServiceImpl implements DataService<City> {
     private final CityRepository repository;
     private final LRUCache<Long, City> cache;
+    private static final String DONT_EXIST = " doesn't exist";
 
     private long findFreeID() {
         var list = read();
@@ -67,10 +68,9 @@ public class CityServiceImpl implements DataService<City> {
                     .longitude(city.getLongitude()).country(country).build();
             repository.save(newCity);
             cache.put(newCity.getId(), newCity);
-        }
-        catch(ResourceNotFoundException e){
+        } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Can't update city with this id"
-                    + city.getId() + " doesn't exist");
+                    + city.getId() + DONT_EXIST);
         }
     }
 
@@ -96,7 +96,7 @@ public class CityServiceImpl implements DataService<City> {
             if (optionalCity.isPresent()) {
                 cache.put(id, optionalCity.get());
             } else throw new ResourceNotFoundException("Can't find city with id = "
-                    + id + " doesn't exist");
+                    + id + DONT_EXIST);
         }
         return optionalCity.get();
     }
@@ -108,7 +108,7 @@ public class CityServiceImpl implements DataService<City> {
             repository.save(city);
             cache.put(city.getId(), city);
         } else throw new ResourceNotFoundException("Can't find city with id = "
-                + city.getId() + " doesn't exist");
+                + city.getId() + DONT_EXIST);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class CityServiceImpl implements DataService<City> {
             repository.deleteById(id);
             cache.remove(id);
         } else throw new ResourceNotFoundException("Can't delete city with id = "
-                + id + " doesn't exist");
+                + id + DONT_EXIST);
     }
 
     public List<City> getBetweenLatitudes
