@@ -63,7 +63,7 @@ public class CityController {
     }
 
     @PutMapping("/update/{countryName}")
-    private HttpStatus update(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
+    public HttpStatus update(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
             throws ResourceNotFoundException {
         var country = countryService.getByName(countryName);
         dataService.updateWithCountry(city, country);
@@ -71,7 +71,7 @@ public class CityController {
     }
 
     @PostMapping("/create/{countryName}")
-    private HttpStatus create(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
+    public HttpStatus create(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
             throws ResourceNotFoundException, BadRequestException {
         var country = countryService.getByName(countryName);
         dataService.createWithCountry(city, country);
@@ -79,14 +79,14 @@ public class CityController {
     }
 
     @DeleteMapping("/delete")
-    private HttpStatus delete(@RequestParam(name = "id") Long id)
+    public HttpStatus delete(@RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         dataService.delete(id);
         return HttpStatus.OK;
     }
 
     @GetMapping("/getBetweenLatitude")
-    private ResponseEntity<List<City>> getCitiesBetween
+    public ResponseEntity<List<City>> getCitiesBetween
             (@RequestParam(name = "first") Double first, @RequestParam(name = "second") Double second) {
         if (first > second)
             return new ResponseEntity<>(dataService.getBetweenLatitudes(second, first), HttpStatus.OK);

@@ -19,7 +19,7 @@ public class LanguageController {
     private final LanguageServiceImpl languageService;
 
     @GetMapping(value = "/all", produces = "application/json")
-    private ResponseEntity<List<Language>> getAll() {
+    public ResponseEntity<List<Language>> getAll() {
         return new ResponseEntity<>(languageService.read(), HttpStatus.OK);
     }
 
@@ -38,21 +38,21 @@ public class LanguageController {
     }
 
     @PostMapping("/create")
-    HttpStatus addLanguage(@RequestBody LanguageDTO language)
+    public HttpStatus addLanguage(@RequestBody LanguageDTO language)
             throws BadRequestException {
         languageService.create(language);
         return HttpStatus.OK;
     }
 
     @DeleteMapping("/delete")
-    HttpStatus deleteLanguage(@RequestParam(name = "id") Long id)
+    public HttpStatus deleteLanguage(@RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         languageService.delete(id);
         return HttpStatus.OK;
     }
 
     @PutMapping("/update")
-    HttpStatus update(@RequestBody LanguageDTO language)
+    public HttpStatus update(@RequestBody LanguageDTO language)
             throws ResourceNotFoundException {
         languageService.update(language);
         return HttpStatus.OK;
