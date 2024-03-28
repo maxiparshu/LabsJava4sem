@@ -1,14 +1,14 @@
 package org.example.distanceapplication.service.implementation;
 
 import lombok.AllArgsConstructor;
-
 import org.example.distanceapplication.cache.LRUCache;
 import org.example.distanceapplication.dto.CityDTO;
 import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.entity.Country;
+import org.example.distanceapplication.exception.BadRequestException;
+import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.example.distanceapplication.repository.CityRepository;
 import org.example.distanceapplication.service.DataService;
-
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -32,37 +32,46 @@ public class CityServiceImpl implements DataService<City> {
         return i + 1;
     }
 
-    public boolean createWithCountry(CityDTO city, Country country) {
-        if (getByName(city.getName()) == null) {
+    public void createWithCountry(CityDTO city, Country country)
+            throws BadRequestException {
+        try {
+            getByName(city.getName());
+            throw new BadRequestException("Can't create because already exist");
+        } catch (ResourceNotFoundException e) {
             var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).country(country).id(findFreeID()).build();
             repository.save(newCity);
             cache.put(newCity.getId(), newCity);
-            return true;
         }
-        return false;
     }
 
     @Override
-    public boolean create(City city) {
-        if (getByID(city.getId()) == null) {
+    public void create(City city) throws BadRequestException {
+        try {
+            getByID(city.getId());
+            throw new BadRequestException("Can't create city with this id"
+                    + city.getId() + " already exist");
+        } catch (ResourceNotFoundException e) {
             repository.save(city);
             cache.put(city.getId(), city);
-            return true;
+
         }
-        return false;
     }
 
-    public boolean updateWithCountry(CityDTO city, Country country) {
-        if (getByID(city.getId()) != null) {
+    public void updateWithCountry(CityDTO city, Country country)
+            throws ResourceNotFoundException {
+        try {
+            getByID(city.getId());
             cache.remove(city.getId());
             var newCity = City.builder().name(city.getName()).latitude(city.getLatitude())
                     .longitude(city.getLongitude()).country(country).build();
             repository.save(newCity);
             cache.put(newCity.getId(), newCity);
-            return true;
         }
-        return false;
+        catch(ResourceNotFoundException e){
+            throw new ResourceNotFoundException("Can't update city with this id"
+                    + city.getId() + " doesn't exist");
+        }
     }
 
     @Override
@@ -71,40 +80,45 @@ public class CityServiceImpl implements DataService<City> {
     }
 
     @Override
-    public City getByName(String name) {
-        var optionalCity = repository.getCityInfoByName(name);
-        optionalCity.ifPresent(city -> cache.put(city.getId(), city));
-        return optionalCity.orElse(null);
+    public City getByName(String name) throws ResourceNotFoundException {
+        var optionalCountry = repository.getCityByName(name);
+        if (optionalCountry.isPresent()) {
+            cache.put(optionalCountry.get().getId(), optionalCountry.get());
+        } else throw new ResourceNotFoundException("Can't find city because with this name doesn't exist");
+        return optionalCountry.get();
     }
 
     @Override
-    public City getByID(Long id) {
+    public City getByID(Long id) throws ResourceNotFoundException {
         var optionalCity = cache.get(id);
-        if (optionalCity.isEmpty())
-            optionalCity = repository.getCityInfoById(id);
-        optionalCity.ifPresent(city -> cache.put(id, city));
-        return optionalCity.orElse(null);
+        if (optionalCity.isEmpty()) {
+            optionalCity = repository.getCityById(id);
+            if (optionalCity.isPresent()) {
+                cache.put(id, optionalCity.get());
+            } else throw new ResourceNotFoundException("Can't find city with id = "
+                    + id + " doesn't exist");
+        }
+        return optionalCity.get();
     }
 
     @Override
-    public boolean update(City city) {
-        if (getByID(city.getId()) != null) {
+    public void update(City city) throws ResourceNotFoundException {
+        if (repository.getCityById(city.getId()).isPresent()) {
             cache.remove(city.getId());
             repository.save(city);
             cache.put(city.getId(), city);
-            return true;
-        }
-        return false;
+        } else throw new ResourceNotFoundException("Can't find city with id = "
+                + city.getId() + " doesn't exist");
     }
 
     @Override
-    public boolean delete(Long id) {
-        if (this.getByID(id) != null) {
+    public void delete(Long id)
+            throws ResourceNotFoundException {
+        if (repository.getCityById(id).isPresent()) {
             repository.deleteById(id);
             cache.remove(id);
-            return true;
-        }
-        return false;
+        } else throw new ResourceNotFoundException("Can't delete city with id = "
+                + id + " doesn't exist");
     }
 
     public List<City> getBetweenLatitudes

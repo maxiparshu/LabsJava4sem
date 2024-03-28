@@ -12,9 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface CityRepository extends JpaRepository<City, Long> {
-    Optional<City> getCityInfoByName(@Param("name") String name);
+    Optional<City> getCityByName(@Param("name") String name);
 
-    Optional<City> getCityInfoById(@Param("id") Long id);
+    Optional<City> getCityById(@Param("id") Long id);
 
     @Query("SELECT city FROM City city WHERE city.latitude > :first" +
             " AND city.latitude < :second ORDER BY city.latitude")

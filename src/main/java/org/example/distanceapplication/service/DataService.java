@@ -1,5 +1,7 @@
 package org.example.distanceapplication.service;
 
+import org.example.distanceapplication.exception.BadRequestException;
+import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -7,15 +9,15 @@ import java.util.List;
 
 @Service
 public interface DataService<T> {
-    boolean create(T entity);
+    void create(T entity) throws BadRequestException;
 
     List<T> read();
 
-    T getByName(String name);
+    T getByName(String name) throws ResourceNotFoundException;
 
-    T getByID(Long id);
+    T getByID(Long id) throws ResourceNotFoundException;
 
-    boolean update(T entity);
+    void update(T entity) throws ResourceNotFoundException;
 
-    boolean delete(Long id);
+    void delete(Long id) throws ResourceNotFoundException;
 }

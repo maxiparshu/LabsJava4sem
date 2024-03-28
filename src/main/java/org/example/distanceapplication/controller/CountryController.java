@@ -3,6 +3,8 @@ package org.example.distanceapplication.controller;
 import lombok.AllArgsConstructor;
 import org.example.distanceapplication.dto.CountryDTO;
 import org.example.distanceapplication.entity.Country;
+import org.example.distanceapplication.exception.BadRequestException;
+import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.example.distanceapplication.service.implementation.CountryServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,53 +24,51 @@ public class CountryController {
     }
 
     @GetMapping(value = "/info", produces = "application/json")
-    public ResponseEntity<Country> getCountry(@RequestParam(name = "country") String name) {
+    public ResponseEntity<Country> getCountry(@RequestParam(name = "country") String name)
+            throws ResourceNotFoundException {
         var country = countryService.getByName(name);
-        if (country == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(country, HttpStatus.OK);
     }
 
     @GetMapping(value = "/find", produces = "application/json")
-    public ResponseEntity<Country> getCityInfoById(@RequestParam(name = "id") Long id) {
+    public ResponseEntity<Country> getCityInfoById(@RequestParam(name = "id") Long id)
+            throws ResourceNotFoundException {
         var country = countryService.getByID(id);
-        if (country == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(country, HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    private HttpStatus update(@RequestBody CountryDTO countryDTO) {
-        if (Boolean.TRUE.equals(countryService.updateWithExist(countryDTO)))
-            return HttpStatus.OK;
-        return HttpStatus.BAD_REQUEST;
+    private HttpStatus update(@RequestBody CountryDTO countryDTO)
+            throws ResourceNotFoundException {
+        countryService.updateWithExist(countryDTO);
+        return HttpStatus.OK;
     }
 
     @PostMapping("/create")
-    private HttpStatus create(@RequestBody CountryDTO countryDTO) {
-
-        if (Boolean.TRUE.equals(countryService.create(countryDTO)))
-            return HttpStatus.OK;
-        return HttpStatus.BAD_REQUEST;
+    private HttpStatus create(@RequestBody CountryDTO countryDTO) throws BadRequestException {
+        countryService.create(countryDTO);
+        return HttpStatus.OK;
     }
 
     @DeleteMapping("/delete")
-    private HttpStatus delete(@RequestParam(name = "id") Long id) {
-        if (Boolean.TRUE.equals(countryService.delete(id)))
-            return HttpStatus.OK;
-        return HttpStatus.NOT_FOUND;
+    private HttpStatus delete(@RequestParam(name = "id") Long id)
+            throws ResourceNotFoundException {
+        countryService.delete(id);
+        return HttpStatus.OK;
     }
 
     @PutMapping("/add_language")
-    private HttpStatus addLanguages(@RequestBody CountryDTO countryDTO) {
-        if (Boolean.TRUE.equals(countryService.modifyLanguage(countryDTO, false)))
-            return HttpStatus.OK;
-        return HttpStatus.BAD_REQUEST;
+    private HttpStatus addLanguages(@RequestBody CountryDTO countryDTO)
+            throws ResourceNotFoundException {
+        countryService.modifyLanguage(countryDTO, false);
+        return HttpStatus.OK;
     }
 
     @PutMapping("/delete_language")
-    private HttpStatus deleteLanguages(@RequestBody CountryDTO countryDTO) {
-        if (Boolean.TRUE.equals(countryService.modifyLanguage(countryDTO, true)))
-            return HttpStatus.OK;
-        return HttpStatus.BAD_REQUEST;
+    private HttpStatus deleteLanguages(@RequestBody CountryDTO countryDTO)
+            throws ResourceNotFoundException {
+        countryService.modifyLanguage(countryDTO, true);
+        return HttpStatus.OK;
     }
 
     @GetMapping("/getByLanguage")

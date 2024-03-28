@@ -2,7 +2,6 @@ package org.example.distanceapplication.cache;
 
 import lombok.Getter;
 
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,7 +11,7 @@ public class LRUCache<K, V> implements Cache<K, V> {
     @Getter
     private HashMap<K, V> hashMap;
     @Getter
-    private static final int MAXSIZE = 3;
+    private static final int MAXSIZE = 50;
 
     public LRUCache() {
         hashMap = new LinkedHashMap<>(10, 0.75f, true) {

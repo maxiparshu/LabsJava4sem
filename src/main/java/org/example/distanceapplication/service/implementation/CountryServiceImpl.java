@@ -3,9 +3,10 @@ package org.example.distanceapplication.service.implementation;
 import lombok.AllArgsConstructor;
 import org.example.distanceapplication.cache.LRUCache;
 import org.example.distanceapplication.dto.CountryDTO;
-import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.entity.Language;
+import org.example.distanceapplication.exception.BadRequestException;
+import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.example.distanceapplication.repository.CountryRepository;
 import org.example.distanceapplication.repository.LanguageRepository;
 import org.example.distanceapplication.service.DataService;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -37,13 +37,16 @@ public class CountryServiceImpl implements DataService<Country> {
     }
 
     @Override
-    public boolean create(Country country) {
-        if (getByName(country.getName()) == null) {
+    public void create(Country country) throws BadRequestException {
+        try {
+            getByID(country.getId());
+            throw new BadRequestException("Can't create country with this id = "
+                    + country.getId() + " already exist");
+        } catch (ResourceNotFoundException e) {
             cache.put(country.getId(), country);
             countryRepository.save(country);
-            return true;
+
         }
-        return false;
     }
 
     @Override
@@ -52,44 +55,52 @@ public class CountryServiceImpl implements DataService<Country> {
     }
 
     @Override
-    public Country getByName(String name) {
+    public Country getByName(String name) throws ResourceNotFoundException {
         var optionalCountry = countryRepository.getByName(name);
-        optionalCountry.ifPresent(country -> cache.put(country.getId(), country));
-        return optionalCountry.orElse(null);
+        if (optionalCountry.isPresent()) {
+            cache.put(optionalCountry.get().getId(), optionalCountry.get());
+        } else throw new ResourceNotFoundException("Can't find country because with this name doesn't exist");
+        return optionalCountry.get();
     }
 
 
     @Override
-    public Country getByID(Long id) {
+    public Country getByID(Long id) throws ResourceNotFoundException {
         var optionalCountry = cache.get(id);
-        if (optionalCountry.isEmpty())
+        if (optionalCountry.isEmpty()) {
             optionalCountry = countryRepository.findById(id);
-        optionalCountry.ifPresent(country -> cache.put(id, country));
-        return optionalCountry.orElse(null);
+            if (optionalCountry.isPresent()) {
+                cache.put(id, optionalCountry.get());
+            } else throw new ResourceNotFoundException("Can't create country with this id = "
+                    + id + " already exist");
+        }
+        return optionalCountry.get();
     }
 
     @Override
-    public boolean update(Country country) {
-        if (getByID(country.getId()) != null) {
+    public void update(Country country) throws ResourceNotFoundException {
+        try {
+            getByID(country.getId());
             cache.remove(country.getId());
             countryRepository.save(country);
             cache.put(country.getId(), country);
-            return true;
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Can't update country with this id"
+                    + country.getId() + " doesn't exist");
         }
-        return false;
     }
 
     @Override
-    public boolean delete(Long id) {
-        if (this.getByID(id) != null) {
+    public void delete(Long id)
+            throws ResourceNotFoundException {
+        if (getByID(id) != null) {
             countryRepository.deleteById(id);
             cache.remove(id);
-            return true;
-        }
-        return false;
+        } else throw new ResourceNotFoundException("Can't delete country with this id = "
+                + id + " doesn't exist");
     }
 
-    public boolean create(CountryDTO countryDTO) {
+    public void create(CountryDTO countryDTO) throws BadRequestException {
         var listLanguage = new HashSet<Language>();
         for (String ptrLanguage : countryDTO.getLanguages()) {
             var language = languageRepository.getByName(ptrLanguage);
@@ -99,12 +110,12 @@ public class CountryServiceImpl implements DataService<Country> {
         for (Language language : listLanguage) {
             newCountry.addLanguage(language);
         }
-        return create(newCountry);
+        create(newCountry);
     }
 
-    public boolean updateWithExist(CountryDTO country) {
+    public void updateWithExist(CountryDTO country) throws ResourceNotFoundException {
         if (countryRepository.getCountryById(country.getId()).isEmpty())
-            return false;
+            throw new ResourceNotFoundException("Country with this id doesn't exist");
         var newLanguages = new HashSet<Language>();
         for (String language : country.getLanguages()) {
             var languageTemp = languageRepository.getByName(language);
@@ -115,19 +126,20 @@ public class CountryServiceImpl implements DataService<Country> {
         for (Language language : newLanguages) {
             updatedCountry.addLanguage(language);
         }
-        return update(updatedCountry);
+        update(updatedCountry);
     }
 
-    public boolean modifyLanguage(CountryDTO countryDTO, boolean deleteFlag) {
-        var country = this.getByID(countryDTO.getId());
+    public void modifyLanguage(CountryDTO countryDTO, boolean deleteFlag)
+            throws ResourceNotFoundException {
+        var country = getByID(countryDTO.getId());
         if (country != null) {
             for (String language : countryDTO.getLanguages()) {
                 var tempLanguage = languageRepository.getByName(language);
                 tempLanguage.ifPresent(!deleteFlag ? country::addLanguage : country::removeLanguage);
             }
-            return update(country);
         }
-        return false;
+        assert country != null;
+        update(country);
     }
 
     public List<Country> getByLanguage(Integer languageId) {
