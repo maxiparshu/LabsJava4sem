@@ -61,7 +61,12 @@ public class CityController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
+    @PutMapping("/update")
+    public HttpStatus update(@RequestBody CityDTO city)
+            throws ResourceNotFoundException {
+        dataService.update(city);
+        return HttpStatus.OK;
+    }
     @PutMapping("/update/{countryName}")
     public HttpStatus update(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
             throws ResourceNotFoundException {
@@ -85,7 +90,7 @@ public class CityController {
         return HttpStatus.OK;
     }
 
-    @GetMapping("/getBetweenLatitude")
+    @GetMapping("/get_between_latitude")
     public ResponseEntity<List<City>> getCitiesBetween
             (@RequestParam(name = "first") Double first, @RequestParam(name = "second") Double second) {
         if (first > second)

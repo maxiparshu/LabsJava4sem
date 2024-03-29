@@ -110,6 +110,21 @@ public class CityServiceImpl implements DataService<City> {
         } else throw new ResourceNotFoundException("Can't find city with id = "
                 + city.getId() + DONT_EXIST);
     }
+    public void update(CityDTO city) throws ResourceNotFoundException {
+
+        var oldCity = cache.get(city.getId());
+        if (oldCity.isEmpty()) {
+            oldCity = repository.getCityById(city.getId());
+            if (oldCity.isEmpty())
+                throw new ResourceNotFoundException("Can't find city with id = " + city.getId() + DONT_EXIST);
+        }
+        cache.remove(city.getId());
+        oldCity.get().setName(city.getName());
+        oldCity.get().setLatitude(city.getLatitude());
+        oldCity.get().setLongitude(city.getLongitude());
+        repository.save(oldCity.get());
+        cache.put(city.getId(), oldCity.get());
+    }
 
     @Override
     public void delete(Long id)

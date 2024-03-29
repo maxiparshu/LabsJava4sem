@@ -11,10 +11,10 @@ public class LRUCache<K, V> implements Cache<K, V> {
     @Getter
     private HashMap<K, V> hashMap;
     @Getter
-    private static final int MAXSIZE = 50;
+    private static final int MAXSIZE = 10;
 
     public LRUCache() {
-        hashMap = new LinkedHashMap<>(10, 0.75f, true) {
+        hashMap = new LinkedHashMap<>(MAXSIZE * 2, 0.75f, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                 return size() > MAXSIZE;
