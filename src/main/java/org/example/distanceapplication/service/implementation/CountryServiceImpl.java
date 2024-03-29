@@ -13,7 +13,6 @@ import org.example.distanceapplication.service.DataService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -144,10 +143,11 @@ public class CountryServiceImpl implements DataService<Country> {
         update(country);
     }
 
-    public List<Country> getByLanguage(Integer languageId) {
-        var optionalLanguage = languageRepository.getLanguageById(Long.valueOf(languageId));
+    public List<Country> getByLanguage(Long id)
+            throws ResourceNotFoundException {
+        var optionalLanguage = languageRepository.getLanguageById(id);
         if (optionalLanguage.isEmpty())
-            return Collections.emptyList();
-        return countryRepository.findAllCountryWithLanguage(languageId);
+            throw new ResourceNotFoundException("No language with this name");
+        return countryRepository.findAllCountryWithLanguage(id);
     }
 }

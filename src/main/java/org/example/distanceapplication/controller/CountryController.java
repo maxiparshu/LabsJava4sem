@@ -71,11 +71,10 @@ public class CountryController {
         return HttpStatus.OK;
     }
 
-    @GetMapping("/getByLanguage")
-    public ResponseEntity<List<Country>> getCountriesByLanguage(@RequestParam(name = "id") Integer idLanguage) {
-        var countries = countryService.getByLanguage(idLanguage);
-        if (countries == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/get_by_language")
+    public ResponseEntity<List<Country>> getCountriesByLanguage(@RequestParam(name = "id") Long id)
+        throws ResourceNotFoundException{
+        var countries = countryService.getByLanguage(id);
         return new ResponseEntity<>(countries, HttpStatus.OK);
     }
 }
