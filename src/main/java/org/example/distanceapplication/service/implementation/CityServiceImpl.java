@@ -95,7 +95,7 @@ public class CityServiceImpl implements DataService<City> {
             optionalCity = repository.getCityById(id);
             if (optionalCity.isPresent()) {
                 cache.put(id, optionalCity.get());
-            } else throw new ResourceNotFoundException("Can't find city with id = "
+            } else throw new ResourceNotFoundException("Cannot find city with id = "
                     + id + DONT_EXIST);
         }
         return optionalCity.get();
@@ -107,7 +107,7 @@ public class CityServiceImpl implements DataService<City> {
             cache.remove(city.getId());
             repository.save(city);
             cache.put(city.getId(), city);
-        } else throw new ResourceNotFoundException("Can't find city with id = "
+        } else throw new ResourceNotFoundException("Can't find city with id: "
                 + city.getId() + DONT_EXIST);
     }
     public void update(CityDTO city) throws ResourceNotFoundException {
