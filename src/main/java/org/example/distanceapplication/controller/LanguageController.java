@@ -1,6 +1,8 @@
 package org.example.distanceapplication.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.example.distanceapplication.aspect.AspectAnnotation;
 import org.example.distanceapplication.dto.LanguageDTO;
 import org.example.distanceapplication.entity.Language;
 import org.example.distanceapplication.exception.BadRequestException;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "LanguageController")
 @RestController
 @RequestMapping("/api/languages")
 @AllArgsConstructor
@@ -23,13 +26,15 @@ public class LanguageController {
         return new ResponseEntity<>(languageService.read(), HttpStatus.OK);
     }
 
+    @AspectAnnotation
     @GetMapping(value = "/info", produces = "application/json")
-    public ResponseEntity<Language> getLanguage(@RequestParam(name = "language") String name) {
+    public ResponseEntity<Language> getLanguage(@RequestParam(name = "language") String name)
+        throws ResourceNotFoundException{
         var language = languageService.getByName(name);
-        if (language == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(language, HttpStatus.OK);
     }
 
+    @AspectAnnotation
     @GetMapping(value = "/find", produces = "application/json")
     public ResponseEntity<Language> getLanguageById(@RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
@@ -37,6 +42,7 @@ public class LanguageController {
         return new ResponseEntity<>(language, HttpStatus.OK);
     }
 
+    @AspectAnnotation
     @PostMapping("/create")
     public HttpStatus addLanguage(@RequestBody LanguageDTO language)
             throws BadRequestException {
@@ -44,6 +50,7 @@ public class LanguageController {
         return HttpStatus.OK;
     }
 
+    @AspectAnnotation
     @DeleteMapping("/delete")
     public HttpStatus deleteLanguage(@RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
@@ -51,6 +58,7 @@ public class LanguageController {
         return HttpStatus.OK;
     }
 
+    @AspectAnnotation
     @PutMapping("/update")
     public HttpStatus update(@RequestBody LanguageDTO language)
             throws ResourceNotFoundException {

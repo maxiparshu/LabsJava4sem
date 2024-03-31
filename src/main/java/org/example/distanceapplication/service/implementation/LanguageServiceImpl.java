@@ -41,8 +41,12 @@ public class LanguageServiceImpl implements DataService<Language> {
     }
 
     @Override
-    public Language getByName(String name) {
-        return repository.getByName(name).orElse(null);
+    public Language getByName(String name) throws ResourceNotFoundException{
+        var optionalLanguage = repository.getByName(name);
+        if (optionalLanguage.isPresent()) {
+            cache.put(optionalLanguage.get().getId(), optionalLanguage.get());
+        } else throw new ResourceNotFoundException("Can't find language because with this name doesn't exist");
+        return optionalLanguage.get();
     }
 
     @Override
@@ -53,7 +57,7 @@ public class LanguageServiceImpl implements DataService<Language> {
             if (optionalLanguage.isPresent()) {
                 cache.put(id, optionalLanguage.get());
             } else throw new ResourceNotFoundException("Can't find language with this id = "
-                    + id + " already exist");
+                    + id + " doesnt exist");
         }
         return optionalLanguage.get();
     }
@@ -88,7 +92,7 @@ public class LanguageServiceImpl implements DataService<Language> {
     }
 
     public void create(LanguageDTO language) throws BadRequestException {
-        create(Language.builder().name(language.getName()).countries(new ArrayList<>()).build());
+        create(Language.builder().name(language.getName()).id(language.getId()).countries(new ArrayList<>()).build());
     }
 
 }

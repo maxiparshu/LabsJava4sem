@@ -30,10 +30,4 @@ public class City {
     @JsonBackReference
     private Country country;
 
-    @Override
-    public String toString() {
-        return name + "\nlatitude: " + latitude + "\nlongitude: " + longitude + "\nINDEX: "
-                + id + "\ncountry " + country.getName() + " id:" + country.getId();
-
-    }
 }

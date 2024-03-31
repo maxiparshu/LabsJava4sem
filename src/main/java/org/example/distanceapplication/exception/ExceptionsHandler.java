@@ -10,8 +10,7 @@ import java.util.Date;
 @RestControllerAdvice
 public class ExceptionsHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ExceptionDetails> resourceNotFoundException
-            (ResourceNotFoundException exception){
+    public ResponseEntity<ExceptionDetails> resourceNotFoundException(ResourceNotFoundException exception){
         ExceptionDetails exceptionDetails = new ExceptionDetails(
                 new Date(),
                 exception.getMessage()
@@ -20,13 +19,12 @@ public class ExceptionsHandler {
                 HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ExceptionDetails> badRequestException
-            (BadRequestException exception){
+    public ResponseEntity<ExceptionDetails> badRequestException(BadRequestException exception){
         ExceptionDetails exceptionDetails = new ExceptionDetails(
                 new Date(),
                 exception.getMessage()
         );
         return new ResponseEntity<>(exceptionDetails,
-                HttpStatus.NOT_FOUND);
+                HttpStatus.BAD_REQUEST);
     }
 }

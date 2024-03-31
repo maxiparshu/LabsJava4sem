@@ -1,7 +1,9 @@
 package org.example.distanceapplication.controller;
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.example.distanceapplication.aspect.AspectAnnotation;
 import org.example.distanceapplication.dto.CityDTO;
 import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.exception.BadRequestException;
@@ -17,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
+@Tag(name = "CityController")
 @RestController
 @RequestMapping("/api/cities")
 @AllArgsConstructor
@@ -30,6 +33,7 @@ public class CityController {
         return new ResponseEntity<>(dataService.read(), HttpStatus.OK);
     }
 
+    @AspectAnnotation
     @GetMapping(value = "/info", produces = "application/json")
     public ResponseEntity<City> getCityInfo(@RequestParam(name = "city") String cityName)
             throws ResourceNotFoundException {
@@ -37,6 +41,7 @@ public class CityController {
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
 
+    @AspectAnnotation
     @GetMapping(value = "/find", produces = "application/json")
     public ResponseEntity<City> getCityInfoById(@RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
@@ -44,6 +49,7 @@ public class CityController {
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
 
+    @AspectAnnotation
     @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
     public ResponseEntity<HashMap<String, String>> getDistance
             (@PathVariable(name = "firstCity") String firstCity,
@@ -61,12 +67,16 @@ public class CityController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @AspectAnnotation
     @PutMapping("/update")
     public HttpStatus update(@RequestBody CityDTO city)
             throws ResourceNotFoundException {
         dataService.update(city);
         return HttpStatus.OK;
     }
+
+    @AspectAnnotation
     @PutMapping("/update/{countryName}")
     public HttpStatus update(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
             throws ResourceNotFoundException {
@@ -74,7 +84,7 @@ public class CityController {
         dataService.updateWithCountry(city, country);
         return HttpStatus.OK;
     }
-
+    @AspectAnnotation
     @PostMapping("/create/{countryName}")
     public HttpStatus create(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
             throws ResourceNotFoundException, BadRequestException {
@@ -82,14 +92,14 @@ public class CityController {
         dataService.createWithCountry(city, country);
         return HttpStatus.OK;
     }
-
+    @AspectAnnotation
     @DeleteMapping("/delete")
     public HttpStatus delete(@RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         dataService.delete(id);
         return HttpStatus.OK;
     }
-
+    @AspectAnnotation
     @GetMapping("/get_between_latitude")
     public ResponseEntity<List<City>> getCitiesBetween
             (@RequestParam(name = "first") Double first, @RequestParam(name = "second") Double second) {

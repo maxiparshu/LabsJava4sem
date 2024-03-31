@@ -69,7 +69,7 @@ public class CountryServiceImpl implements DataService<Country> {
     public Country getByID(Long id) throws ResourceNotFoundException {
         var optionalCountry = cache.get(id);
         if (optionalCountry.isEmpty()) {
-            optionalCountry = countryRepository.findById(id);
+            optionalCountry = countryRepository.getCountryById(id);
             if (optionalCountry.isPresent()) {
                 cache.put(id, optionalCountry.get());
             } else throw new ResourceNotFoundException("Can't create country with this id = "
@@ -80,15 +80,14 @@ public class CountryServiceImpl implements DataService<Country> {
 
     @Override
     public void update(Country country) throws ResourceNotFoundException {
-        try {
-            getByID(country.getId());
+        if (country == null) {
+            throw new ResourceNotFoundException("Can't update country");
+        }
+        if (countryRepository.getCountryById(country.getId()).isPresent())
+        {
             cache.remove(country.getId());
             countryRepository.save(country);
-            cache.put(country.getId(), country);
-        } catch (ResourceNotFoundException e) {
-            throw new ResourceNotFoundException("Can't update country with this id"
-                    + country.getId() + DONT_EXIST);
-        }
+        }else throw new ResourceNotFoundException("Can't update country with this id = ");
     }
 
     @Override
