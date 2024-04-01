@@ -21,11 +21,12 @@ public class Language {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
-
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "languages", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "languages",
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+            fetch = FetchType.LAZY)
     @JsonBackReference
-    List<Country> countries = new ArrayList<>();
+    private List<Country> countries = new ArrayList<>();
 }

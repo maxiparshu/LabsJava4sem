@@ -27,21 +27,23 @@ public class Country {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "country", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "country",
+            cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<City> cities = new ArrayList<>();
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE,
+            CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "language_country",
             joinColumns = {@JoinColumn(name = "id_country")},
             inverseJoinColumns = {@JoinColumn(name = "id_language")})
     @JsonManagedReference
-    Set<Language> languages = new HashSet<>();
+    private Set<Language> languages = new HashSet<>();
 
-    public void addLanguage(Language language) {
-            languages.add(language);
+    public void addLanguage(final Language language) {
+        languages.add(language);
     }
 
-    public void removeLanguage(Language language) {
+    public void removeLanguage(final Language language) {
         languages.remove(language);
     }
 }

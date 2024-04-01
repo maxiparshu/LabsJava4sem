@@ -23,10 +23,10 @@ public class LanguageServiceImpl implements DataService<Language> {
     private static final String DONT_EXIST = " doesn't exist";
 
     @Override
-    public void create(Language language) {
+    public void create(final Language language) {
         try {
             getByID(language.getId());
-            throw new BadRequestException("Can't create language with this id = "
+            throw new BadRequestException("Can't create language with id = "
                     + language.getId() + " already exist");
         } catch (ResourceNotFoundException e) {
             repository.save(language);
@@ -41,23 +41,30 @@ public class LanguageServiceImpl implements DataService<Language> {
     }
 
     @Override
-    public Language getByName(String name) throws ResourceNotFoundException{
+    public Language getByName(final String name)
+            throws ResourceNotFoundException {
         var optionalLanguage = repository.getByName(name);
         if (optionalLanguage.isPresent()) {
             cache.put(optionalLanguage.get().getId(), optionalLanguage.get());
-        } else throw new ResourceNotFoundException("Can't find language because with this name doesn't exist");
+        } else {
+            throw new ResourceNotFoundException(
+                    "Can't find language because with this name");
+        }
         return optionalLanguage.get();
     }
 
     @Override
-    public Language getByID(Long id) throws ResourceNotFoundException {
+    public Language getByID(final Long id) throws ResourceNotFoundException {
         var optionalLanguage = cache.get(id);
         if (optionalLanguage.isEmpty()) {
             optionalLanguage = repository.findById(id);
             if (optionalLanguage.isPresent()) {
                 cache.put(id, optionalLanguage.get());
-            } else throw new ResourceNotFoundException("Can't find language with this id = "
-                    + id + " doesnt exist");
+            } else {
+                throw new ResourceNotFoundException(
+                        "Can't find language with this id = "
+                        + id + " doesnt exist");
+            }
         }
         return optionalLanguage.get();
     }
@@ -70,29 +77,37 @@ public class LanguageServiceImpl implements DataService<Language> {
             repository.save(language);
             cache.put(language.getId(), language);
         } catch (ResourceNotFoundException e) {
-            throw new ResourceNotFoundException("Can't update language with this id = "
+            throw new ResourceNotFoundException(
+                    "Can't update language with this id = "
                     + language.getId() + DONT_EXIST);
         }
     }
 
     @Override
-    public void delete(Long id) throws ResourceNotFoundException {
-        Language language;
-        if ((language = getByID(id)) != null) {
+    public void delete(final Long id) throws ResourceNotFoundException {
+        Language language = getByID(id);
+        if (language != null) {
             List<Country> existingCountries = language.getCountries();
-            for (Country country : existingCountries)
+            for (Country country : existingCountries) {
                 country.removeLanguage(language);
+            }
             repository.delete(language);
-        } else throw new ResourceNotFoundException("Can't delete language with this id = "
-                + id + DONT_EXIST);
+        } else {
+            throw new ResourceNotFoundException(
+                    "Can't delete language with this id = "
+                    + id + DONT_EXIST);
+        }
     }
 
-    public void update(LanguageDTO language) throws ResourceNotFoundException {
-        update(Language.builder().name(language.getName()).countries(new ArrayList<>()).id(language.getId()).build());
+    public void update(final LanguageDTO language)
+            throws ResourceNotFoundException {
+        update(Language.builder().name(language.getName())
+                .countries(new ArrayList<>()).id(language.getId()).build());
     }
 
-    public void create(LanguageDTO language) throws BadRequestException {
-        create(Language.builder().name(language.getName()).id(language.getId()).countries(new ArrayList<>()).build());
+    public void create(final LanguageDTO language) throws BadRequestException {
+        create(Language.builder().name(language.getName())
+                .id(language.getId()).countries(new ArrayList<>()).build());
     }
 
 }

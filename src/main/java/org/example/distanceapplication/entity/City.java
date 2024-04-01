@@ -2,7 +2,6 @@ package org.example.distanceapplication.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,15 +16,16 @@ import lombok.NoArgsConstructor;
 public class City {
     @Id
     @Column(name = "id")
-    Long id;
+    private Long id;
     @Column(name = "name")
-    String name;
+    private String name;
     @Column(name = "latitude")
-    Double latitude;
+    private Double latitude;
     @Column(name = "longitude")
-    Double longitude;
+    private Double longitude;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "id_country")
     @JsonBackReference
     private Country country;

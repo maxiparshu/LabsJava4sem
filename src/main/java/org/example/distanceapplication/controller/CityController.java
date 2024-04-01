@@ -35,7 +35,8 @@ public class CityController {
 
     @AspectAnnotation
     @GetMapping(value = "/info", produces = "application/json")
-    public ResponseEntity<City> getCityInfo(@RequestParam(name = "city") String cityName)
+    public ResponseEntity<City> getCityInfo(
+            final @RequestParam(name = "city") String cityName)
             throws ResourceNotFoundException {
         var cityInfo = dataService.getByName(cityName);
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
@@ -43,21 +44,24 @@ public class CityController {
 
     @AspectAnnotation
     @GetMapping(value = "/find", produces = "application/json")
-    public ResponseEntity<City> getCityInfoById(@RequestParam(name = "id") Long id)
+    public ResponseEntity<City> getCityInfoById(
+            final @RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         var cityInfo = dataService.getByID(id);
         return new ResponseEntity<>(cityInfo, HttpStatus.OK);
     }
 
     @AspectAnnotation
-    @GetMapping(value = "/distance/{firstCity}+{secondCity}", produces = "application/json")
-    public ResponseEntity<HashMap<String, String>> getDistance
-            (@PathVariable(name = "firstCity") String firstCity,
-             @PathVariable(name = "secondCity") String secondCity)
+    @GetMapping(value = "/distance/{firstCity}+{secondCity}",
+            produces = "application/json")
+    public ResponseEntity<HashMap<String, String>> getDistance(
+            final @PathVariable(name = "firstCity") String firstCity,
+            final @PathVariable(name = "secondCity") String secondCity)
             throws ResourceNotFoundException {
         var firstCityInfo = dataService.getByName(firstCity);
         var secondCityInfo = dataService.getByName(secondCity);
-        double distance = distanceService.getDistanceInKilometres(firstCityInfo, secondCityInfo);
+        double distance = distanceService.getDistanceInKilometres(
+                firstCityInfo, secondCityInfo);
         if (distance != -1) {
             var objects = new HashMap<String, String>();
             objects.put("First city info", firstCityInfo.toString());
@@ -70,7 +74,7 @@ public class CityController {
 
     @AspectAnnotation
     @PutMapping("/update")
-    public HttpStatus update(@RequestBody CityDTO city)
+    public HttpStatus update(final @RequestBody CityDTO city)
             throws ResourceNotFoundException {
         dataService.update(city);
         return HttpStatus.OK;
@@ -78,33 +82,45 @@ public class CityController {
 
     @AspectAnnotation
     @PutMapping("/update/{countryName}")
-    public HttpStatus update(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
+    public HttpStatus update(final @RequestBody CityDTO city,
+                             final @PathVariable(name = "countryName")
+                             String countryName)
             throws ResourceNotFoundException {
         var country = countryService.getByName(countryName);
         dataService.updateWithCountry(city, country);
         return HttpStatus.OK;
     }
+
     @AspectAnnotation
     @PostMapping("/create/{countryName}")
-    public HttpStatus create(@RequestBody CityDTO city, @PathVariable(name = "countryName") String countryName)
+    public HttpStatus create(final @RequestBody CityDTO city,
+                             final @PathVariable(name = "countryName")
+                             String countryName)
             throws ResourceNotFoundException, BadRequestException {
         var country = countryService.getByName(countryName);
         dataService.createWithCountry(city, country);
         return HttpStatus.OK;
     }
+
     @AspectAnnotation
     @DeleteMapping("/delete")
-    public HttpStatus delete(@RequestParam(name = "id") Long id)
+    public HttpStatus delete(final @RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         dataService.delete(id);
         return HttpStatus.OK;
     }
+
     @AspectAnnotation
     @GetMapping("/get_between_latitude")
-    public ResponseEntity<List<City>> getCitiesBetween
-            (@RequestParam(name = "first") Double first, @RequestParam(name = "second") Double second) {
-        if (first > second)
-            return new ResponseEntity<>(dataService.getBetweenLatitudes(second, first), HttpStatus.OK);
-        return new ResponseEntity<>(dataService.getBetweenLatitudes(first, second), HttpStatus.OK);
+    public ResponseEntity<List<City>> getCitiesBetween(
+            final @RequestParam(name = "first") Double first,
+            final @RequestParam(name = "second") Double second) {
+        if (first > second) {
+            return new ResponseEntity<>(
+                    dataService.getBetweenLatitudes(second, first),
+                    HttpStatus.OK);
+        }
+        return new ResponseEntity<>(
+                dataService.getBetweenLatitudes(first, second), HttpStatus.OK);
     }
 }

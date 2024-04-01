@@ -11,20 +11,18 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+@Slf4j
 @Component
 @Aspect
-@Slf4j
-public class LoggingAspect {
+public abstract class LoggingAspect {
     @Pointcut("within(org.example.distanceapplication.controller..*)"
             + " || within(org.example.distanceapplication.service..*)"
             + " || within(org.example.distanceapplication.cache..*)")
-    public void allMethods() {
-    }
+    public void allMethods() { }
 
-    @Pointcut("@annotation(org.example.distanceapplication.aspect.AspectAnnotation)")
-    public void methodsWithAspectAnnotation() {
-
-    }
+    @Pointcut("@annotation"
+            + "(org.example.distanceapplication.aspect.AspectAnnotation)")
+    public void methodsWithAspectAnnotation() { }
 
     @Around("methodsWithAspectAnnotation()")
     public Object loggingMethods(final ProceedingJoinPoint point)

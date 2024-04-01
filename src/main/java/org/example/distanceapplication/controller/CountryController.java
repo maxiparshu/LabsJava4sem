@@ -28,7 +28,8 @@ public class CountryController {
 
     @AspectAnnotation
     @GetMapping(value = "/info", produces = "application/json")
-    public ResponseEntity<Country> getCountry(@RequestParam(name = "country") String name)
+    public ResponseEntity<Country> getCountry(
+            final @RequestParam(name = "country") String name)
             throws ResourceNotFoundException {
         var country = countryService.getByName(name);
         return new ResponseEntity<>(country, HttpStatus.OK);
@@ -36,7 +37,8 @@ public class CountryController {
 
     @AspectAnnotation
     @GetMapping(value = "/find", produces = "application/json")
-    public ResponseEntity<Country> getCityInfoById(@RequestParam(name = "id") Long id)
+    public ResponseEntity<Country> getCityInfoById(
+            final @RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         var country = countryService.getByID(id);
         return new ResponseEntity<>(country, HttpStatus.OK);
@@ -44,16 +46,17 @@ public class CountryController {
 
     @AspectAnnotation
     @PutMapping("/update")
-    public HttpStatus update(@RequestBody CountryDTO countryDTO)
+    public HttpStatus update(final @RequestBody CountryDTO countryDto)
             throws ResourceNotFoundException {
-        countryService.updateWithExist(countryDTO);
+        countryService.updateWithExist(countryDto);
         return HttpStatus.OK;
     }
 
     @AspectAnnotation
     @PostMapping("/create")
-    public HttpStatus create(@RequestBody CountryDTO countryDTO) throws BadRequestException {
-        countryService.create(countryDTO);
+    public HttpStatus create(final @RequestBody CountryDTO countryDto)
+            throws BadRequestException {
+        countryService.create(countryDto);
         return HttpStatus.OK;
     }
 
@@ -67,23 +70,26 @@ public class CountryController {
 
     @AspectAnnotation
     @PutMapping("/add_language")
-    public HttpStatus addLanguages(@RequestBody CountryDTO countryDTO)
+    public HttpStatus addLanguages(
+            final @RequestBody CountryDTO countryDto)
             throws ResourceNotFoundException {
-        countryService.modifyLanguage(countryDTO, false);
+        countryService.modifyLanguage(countryDto, false);
         return HttpStatus.OK;
     }
 
     @AspectAnnotation
     @PutMapping("/delete_language")
-    public HttpStatus deleteLanguages(@RequestBody CountryDTO countryDTO)
+    public HttpStatus deleteLanguages(
+            final @RequestBody CountryDTO countryDto)
             throws ResourceNotFoundException {
-        countryService.modifyLanguage(countryDTO, true);
+        countryService.modifyLanguage(countryDto, true);
         return HttpStatus.OK;
     }
 
     @AspectAnnotation
     @GetMapping("/get_by_language")
-    public ResponseEntity<List<Country>> getCountriesByLanguage(@RequestParam(name = "id") Long id)
+    public ResponseEntity<List<Country>> getCountriesByLanguage(
+            final @RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         var countries = countryService.getByLanguage(id);
         return new ResponseEntity<>(countries, HttpStatus.OK);

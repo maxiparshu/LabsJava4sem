@@ -15,7 +15,8 @@ public interface CountryRepository extends JpaRepository<Country, Long> {
 
     Optional<Country> getCountryById(@Param("id") Long id);
 
-    @Query(value = "SELECT country.id, country.name FROM country LEFT JOIN language_country " +
-            "ON country.id = language_country.id_country WHERE language_country.id_language = ?1", nativeQuery = true)
+    @Query(value = "SELECT country.id, country.name FROM country "
+            + "LEFT JOIN language_country ON country.id = language_country.id_country "
+            + "WHERE language_country.id_language = ?1", nativeQuery = true)
     List<Country> findAllCountryWithLanguage(@Param("1") Long id);
 }

@@ -4,9 +4,10 @@ import lombok.Data;
 
 import java.util.List;
 
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @Data
 public class CountryDTO {
     private Long id;
     private String name;
-    List<String> languages;
+    private List<String> languages;
 }

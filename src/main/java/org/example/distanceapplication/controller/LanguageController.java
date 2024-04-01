@@ -28,15 +28,17 @@ public class LanguageController {
 
     @AspectAnnotation
     @GetMapping(value = "/info", produces = "application/json")
-    public ResponseEntity<Language> getLanguage(@RequestParam(name = "language") String name)
-        throws ResourceNotFoundException{
+    public ResponseEntity<Language> getLanguage(
+            final @RequestParam(name = "language") String name)
+            throws ResourceNotFoundException {
         var language = languageService.getByName(name);
         return new ResponseEntity<>(language, HttpStatus.OK);
     }
 
     @AspectAnnotation
     @GetMapping(value = "/find", produces = "application/json")
-    public ResponseEntity<Language> getLanguageById(@RequestParam(name = "id") Long id)
+    public ResponseEntity<Language> getLanguageById(
+            final @RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         var language = languageService.getByID(id);
         return new ResponseEntity<>(language, HttpStatus.OK);
@@ -44,7 +46,7 @@ public class LanguageController {
 
     @AspectAnnotation
     @PostMapping("/create")
-    public HttpStatus addLanguage(@RequestBody LanguageDTO language)
+    public HttpStatus addLanguage(final @RequestBody LanguageDTO language)
             throws BadRequestException {
         languageService.create(language);
         return HttpStatus.OK;
@@ -52,7 +54,7 @@ public class LanguageController {
 
     @AspectAnnotation
     @DeleteMapping("/delete")
-    public HttpStatus deleteLanguage(@RequestParam(name = "id") Long id)
+    public HttpStatus deleteLanguage(final @RequestParam(name = "id") Long id)
             throws ResourceNotFoundException {
         languageService.delete(id);
         return HttpStatus.OK;
@@ -60,7 +62,7 @@ public class LanguageController {
 
     @AspectAnnotation
     @PutMapping("/update")
-    public HttpStatus update(@RequestBody LanguageDTO language)
+    public HttpStatus update(final @RequestBody LanguageDTO language)
             throws ResourceNotFoundException {
         languageService.update(language);
         return HttpStatus.OK;

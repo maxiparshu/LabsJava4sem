@@ -16,7 +16,8 @@ public interface CityRepository extends JpaRepository<City, Long> {
 
     Optional<City> getCityById(@Param("id") Long id);
 
-    @Query("SELECT city FROM City city WHERE city.latitude > :first" +
-            " AND city.latitude < :second ORDER BY city.latitude")
-    List<City> findAllCityWithLatitudeBetween(@Param("first") Double first, @Param("second") Double second);
+    @Query("SELECT city FROM City city WHERE city.latitude > :first"
+            + " AND city.latitude < :second ORDER BY city.latitude")
+    List<City> findAllCityWithLatitudeBetween(@Param("first") Double first,
+                                              @Param("second") Double second);
 }
