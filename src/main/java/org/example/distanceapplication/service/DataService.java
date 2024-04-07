@@ -1,23 +1,23 @@
 package org.example.distanceapplication.service;
 
+import java.util.List;
 import org.example.distanceapplication.exception.BadRequestException;
 import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-
-import java.util.List;
-
+@SuppressWarnings("checkstyle:MissingJavadocType")
 @Service
 public interface DataService<T> {
-    void create(T entity) throws BadRequestException;
+  void create(T entity) throws BadRequestException;
 
-    List<T> read();
+  List<T> read();
 
-    T getByName(String name) throws ResourceNotFoundException;
+  T getByName(String name) throws ResourceNotFoundException;
 
-    T getByID(Long id) throws ResourceNotFoundException;
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  T getByID(Long id) throws ResourceNotFoundException;
 
-    void update(T entity) throws ResourceNotFoundException;
+  void update(T entity) throws ResourceNotFoundException;
 
-    void delete(Long id) throws ResourceNotFoundException;
+  void delete(Long id) throws ResourceNotFoundException;
 }

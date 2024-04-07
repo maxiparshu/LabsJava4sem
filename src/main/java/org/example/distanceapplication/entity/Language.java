@@ -1,14 +1,22 @@
 package org.example.distanceapplication.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -17,16 +25,16 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "language")
 public class Language {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private Long id;
-    @Column(name = "name")
-    private String name;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id")
+  private Long id;
+  @Column(name = "name")
+  private String name;
 
-    @ManyToMany(mappedBy = "languages",
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-            fetch = FetchType.LAZY)
-    @JsonBackReference
-    private List<Country> countries = new ArrayList<>();
+  @ManyToMany(mappedBy = "languages",
+      cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+      fetch = FetchType.LAZY)
+  @JsonBackReference
+  private List<Country> countries = new ArrayList<>();
 }
