@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @Service
 public class DistanceServiceImpl implements DistanceService {
+
   @Override
   public double getDistanceInKilometres(final City first,
                                         final City second) {

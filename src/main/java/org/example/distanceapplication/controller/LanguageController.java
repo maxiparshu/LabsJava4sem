@@ -74,4 +74,13 @@ public class LanguageController {
     languageService.update(language);
     return HttpStatus.OK;
   }
+
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  @AspectAnnotation
+  @PostMapping("/bulkCreate")
+  public HttpStatus bulkCreate(
+      @RequestBody final List<LanguageDTO> languageDTOS) {
+    languageService.createBulk(languageDTOS);
+    return HttpStatus.OK;
+  }
 }

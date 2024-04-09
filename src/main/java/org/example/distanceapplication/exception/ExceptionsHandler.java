@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RestControllerAdvice
 public class ExceptionsHandler {
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ExceptionDetails> resourceNotFoundException(
       final ResourceNotFoundException exception) {
@@ -20,6 +22,7 @@ public class ExceptionsHandler {
         HttpStatus.NOT_FOUND);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<ExceptionDetails> badRequestException(
       final BadRequestException exception) {

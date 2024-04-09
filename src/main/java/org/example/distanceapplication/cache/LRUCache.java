@@ -15,7 +15,8 @@ public class LRUCache<K, V> implements Cache<K, V> {
   @Getter
   private static final int MAXSIZE = 10;
 
-  @SuppressWarnings("checkstyle:MagicNumber")
+  @SuppressWarnings({"checkstyle:MagicNumber",
+      "checkstyle:MissingJavadocMethod"})
   public LRUCache() {
     hashMap = new LinkedHashMap<>(MAXSIZE * 2, 0.75f, true) {
       @Override

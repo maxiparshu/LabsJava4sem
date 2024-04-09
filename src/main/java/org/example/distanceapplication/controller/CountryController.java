@@ -69,7 +69,7 @@ public class CountryController {
 
   @AspectAnnotation
   @DeleteMapping("/delete")
-  public HttpStatus delete(@RequestParam(name = "id") Long id)
+  public HttpStatus delete(final @RequestParam(name = "id") Long id)
       throws ResourceNotFoundException {
     countryService.delete(id);
     return HttpStatus.OK;

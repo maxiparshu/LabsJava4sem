@@ -1,5 +1,7 @@
 package org.example.distanceapplication.service.implementation;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -13,16 +15,19 @@ import org.example.distanceapplication.repository.CountryRepository;
 import org.example.distanceapplication.repository.LanguageRepository;
 import org.example.distanceapplication.service.DataService;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
+@SuppressWarnings({"checkstyle:MissingJavadocType",
+    "checkstyle:RegexpSingleline"})
 @Service
 @AllArgsConstructor
-public class CountryServiceImpl implements DataService<Country> {
+public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   private final CountryRepository countryRepository;
   private final LanguageRepository languageRepository;
-
   private final LRUCache<Long, Country> cache;
+  private final JdbcTemplate jdbcTemplate;
   private static final String DONT_EXIST = " doesn't exist";
 
   @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
@@ -32,6 +37,22 @@ public class CountryServiceImpl implements DataService<Country> {
     for (Country country : list) {
       if (country.getId() != i) {
         return i;
+      }
+      i++;
+    }
+    return i + 1;
+  }
+
+  private long findFreeId(final HashSet<Long> usedIndexes) {
+    var list = read();
+    long i = 1;
+    for (Country country : list) {
+      if (country.getId() != i) {
+        if (!usedIndexes.contains(i)) {
+          return i;
+        } else {
+          i = country.getId();
+        }
       }
       i++;
     }
@@ -113,6 +134,34 @@ public class CountryServiceImpl implements DataService<Country> {
     }
   }
 
+  @Override
+  public void createBulk(final List<CountryDTO> list)
+      throws BadRequestException {
+    List<Country> countries = list.stream()
+        .map(countryDTO -> Country.builder().name(countryDTO.getName())
+            .build()).toList();
+    String sql = "INSERT into country (name, id) VALUES (?, ?)";
+    var indexes = new HashSet<Long>();
+    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+      @Override
+      public void setValues(final PreparedStatement statement,
+                            final int i)
+          throws SQLException {
+        statement.setString(1, countries.get(i).getName());
+        long index = findFreeId(indexes);
+        indexes.add(index);
+        statement.setLong(2, index);
+      }
+
+      @Override
+      public int getBatchSize() {
+        return countries.size();
+      }
+    });
+  }
+
+  @SuppressWarnings({"checkstyle:OverloadMethodsDeclarationOrder",
+      "checkstyle:MissingJavadocMethod", "checkstyle:EmptyLineSeparator"})
   public void create(final CountryDTO countryDto) throws BadRequestException {
     var listLanguage = new HashSet<Language>();
     for (String ptrLanguage : countryDto.getLanguages()) {
@@ -127,6 +176,7 @@ public class CountryServiceImpl implements DataService<Country> {
     create(newCountry);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void updateWithExist(final CountryDTO country)
       throws ResourceNotFoundException {
     if (countryRepository.getCountryById(country.getId()).isEmpty()) {
@@ -146,6 +196,8 @@ public class CountryServiceImpl implements DataService<Country> {
     update(updatedCountry);
   }
 
+
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void modifyLanguage(final CountryDTO countryDto,
                              final boolean deleteFlag)
       throws ResourceNotFoundException {
@@ -161,6 +213,7 @@ public class CountryServiceImpl implements DataService<Country> {
     update(country);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public List<Country> getByLanguage(final Long id)
       throws ResourceNotFoundException {
     var optionalLanguage = languageRepository.getLanguageById(id);

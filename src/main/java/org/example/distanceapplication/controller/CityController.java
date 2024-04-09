@@ -57,6 +57,7 @@ public class CityController {
     return new ResponseEntity<>(cityInfo, HttpStatus.OK);
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @GetMapping(value = "/distance/{firstCity}+{secondCity}",
       produces = "application/json")
@@ -86,6 +87,7 @@ public class CityController {
     return HttpStatus.OK;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @PutMapping("/update/{countryName}")
   public HttpStatus update(final @RequestBody CityDTO city,
@@ -97,6 +99,7 @@ public class CityController {
     return HttpStatus.OK;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @PostMapping("/create/{countryName}")
   public HttpStatus create(final @RequestBody CityDTO city,
@@ -116,6 +119,7 @@ public class CityController {
     return HttpStatus.OK;
   }
 
+  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @GetMapping("/get_between_latitude")
   public ResponseEntity<List<City>> getCitiesBetween(
@@ -128,5 +132,14 @@ public class CityController {
     }
     return new ResponseEntity<>(
         dataService.getBetweenLatitudes(first, second), HttpStatus.OK);
+  }
+
+  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
+  @AspectAnnotation
+  @PostMapping("/bulkCreate")
+  public HttpStatus bulkCreate(
+      @RequestBody final List<CityDTO> cityDTOS) {
+    dataService.createBulk(cityDTOS);
+    return HttpStatus.OK;
   }
 }
