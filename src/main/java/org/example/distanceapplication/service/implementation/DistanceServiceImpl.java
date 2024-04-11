@@ -6,7 +6,6 @@ import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.service.DistanceService;
 import org.springframework.stereotype.Service;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Service
 public class DistanceServiceImpl implements DistanceService {
 

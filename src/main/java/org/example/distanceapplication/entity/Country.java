@@ -22,7 +22,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Entity
 @Data
 @Table(name = "country")

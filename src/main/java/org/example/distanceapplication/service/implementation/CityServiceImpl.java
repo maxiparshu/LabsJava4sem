@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.example.distanceapplication.cache.LRUCache;
 import org.example.distanceapplication.dto.CityDTO;
@@ -20,7 +21,6 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Service
 @AllArgsConstructor
 public class CityServiceImpl implements DataService<City, CityDTO> {
@@ -58,7 +58,6 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
     return i + 1;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void createWithCountry(final CityDTO city,
                                 final Country country)
       throws BadRequestException {
@@ -87,7 +86,6 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
     }
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void updateWithCountry(final CityDTO city,
                                 final Country country)
       throws ResourceNotFoundException {
@@ -124,7 +122,7 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
 
   @Override
   public City getByID(final Long id) throws ResourceNotFoundException {
-    var optionalCity = cache.get(id);
+    Optional<City> optionalCity = cache.get(id);
     if (optionalCity.isEmpty()) {
       optionalCity = repository.getCityById(id);
       if (optionalCity.isPresent()) {
@@ -150,7 +148,6 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
     }
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public void update(final CityDTO city) throws ResourceNotFoundException {
 
     var oldCity = cache.get(city.getId());

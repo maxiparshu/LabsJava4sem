@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Tag(name = "LanguageController")
 @RestController
 @RequestMapping("/api/languages")
@@ -75,7 +74,6 @@ public class LanguageController {
     return HttpStatus.OK;
   }
 
-  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   @AspectAnnotation
   @PostMapping("/bulkCreate")
   public HttpStatus bulkCreate(

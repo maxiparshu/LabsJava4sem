@@ -5,7 +5,6 @@ import org.example.distanceapplication.exception.BadRequestException;
 import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Service
 public interface DataService<T, D> {
   void create(T entity) throws BadRequestException;
@@ -14,7 +13,6 @@ public interface DataService<T, D> {
 
   T getByName(String name) throws ResourceNotFoundException;
 
-  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   T getByID(Long id) throws ResourceNotFoundException;
 
   void update(T entity) throws ResourceNotFoundException;

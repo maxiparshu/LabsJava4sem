@@ -19,8 +19,6 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-@SuppressWarnings({"checkstyle:MissingJavadocType",
-    "checkstyle:RegexpSingleline"})
 @Service
 @AllArgsConstructor
 public class CountryServiceImpl implements DataService<Country, CountryDTO> {
@@ -30,7 +28,6 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   private final JdbcTemplate jdbcTemplate;
   private static final String DONT_EXIST = " doesn't exist";
 
-  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   private long findFreeID() {
     var list = read();
     long i = 1;
@@ -160,8 +157,7 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
     });
   }
 
-  @SuppressWarnings({"checkstyle:OverloadMethodsDeclarationOrder",
-      "checkstyle:MissingJavadocMethod", "checkstyle:EmptyLineSeparator"})
+  @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
   public void create(final CountryDTO countryDto) throws BadRequestException {
     var listLanguage = new HashSet<Language>();
     for (String ptrLanguage : countryDto.getLanguages()) {
@@ -213,7 +209,6 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
     update(country);
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   public List<Country> getByLanguage(final Long id)
       throws ResourceNotFoundException {
     var optionalLanguage = languageRepository.getLanguageById(id);

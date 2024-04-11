@@ -14,7 +14,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Entity
 @Table(name = "city")
 @Data

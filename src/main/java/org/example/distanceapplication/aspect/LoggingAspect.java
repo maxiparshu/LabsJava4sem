@@ -10,24 +10,23 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
-
-@SuppressWarnings("checkstyle:MissingJavadocType")
+@Aspect
 @Slf4j
 @Component
-@Aspect
-public abstract class LoggingAspect {
+public class LoggingAspect {
   @Pointcut("within(org.example.distanceapplication.controller..*)"
       + " || within(org.example.distanceapplication.service..*)"
       + " || within(org.example.distanceapplication.cache..*)")
   public void allMethods() {
+
   }
 
-  @Pointcut("@annotation"
-      + "(org.example.distanceapplication.aspect.AspectAnnotation)")
-  public void methodsWithAspectAnnotation() {
+  @Pointcut("@annotation(AspectAnnotation)")
+  public void methodsWithAnnotation() {
+
   }
 
-  @Around("methodsWithAspectAnnotation()")
+  @Around(value = "methodsWithAnnotation()")
   public Object loggingMethods(final ProceedingJoinPoint point)
       throws Throwable {
     log.info("Enter method {}.{} with argument(s): {}",
@@ -57,5 +56,4 @@ public abstract class LoggingAspect {
         joinPoint.getSignature().getDeclaringTypeName(),
         joinPoint.getSignature().getName(), exception.getMessage());
   }
-
 }

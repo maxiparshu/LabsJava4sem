@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Tag(name = "CityController")
 @RestController
 @RequestMapping("/api/cities")
@@ -57,7 +56,6 @@ public class CityController {
     return new ResponseEntity<>(cityInfo, HttpStatus.OK);
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @GetMapping(value = "/distance/{firstCity}+{secondCity}",
       produces = "application/json")
@@ -87,7 +85,6 @@ public class CityController {
     return HttpStatus.OK;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @PutMapping("/update/{countryName}")
   public HttpStatus update(final @RequestBody CityDTO city,
@@ -99,7 +96,6 @@ public class CityController {
     return HttpStatus.OK;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @PostMapping("/create/{countryName}")
   public HttpStatus create(final @RequestBody CityDTO city,
@@ -119,7 +115,6 @@ public class CityController {
     return HttpStatus.OK;
   }
 
-  @SuppressWarnings("checkstyle:MissingJavadocMethod")
   @AspectAnnotation
   @GetMapping("/get_between_latitude")
   public ResponseEntity<List<City>> getCitiesBetween(
@@ -134,7 +129,6 @@ public class CityController {
         dataService.getBetweenLatitudes(first, second), HttpStatus.OK);
   }
 
-  @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
   @AspectAnnotation
   @PostMapping("/bulkCreate")
   public HttpStatus bulkCreate(

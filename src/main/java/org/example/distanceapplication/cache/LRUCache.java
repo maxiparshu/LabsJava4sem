@@ -7,16 +7,12 @@ import java.util.Optional;
 import lombok.Getter;
 
 
-@SuppressWarnings({"checkstyle:AbbreviationAsWordInName",
-    "checkstyle:MissingJavadocType"})
 public class LRUCache<K, V> implements Cache<K, V> {
   @Getter
   private HashMap<K, V> hashMap;
   @Getter
   private static final int MAXSIZE = 10;
 
-  @SuppressWarnings({"checkstyle:MagicNumber",
-      "checkstyle:MissingJavadocMethod"})
   public LRUCache() {
     hashMap = new LinkedHashMap<>(MAXSIZE * 2, 0.75f, true) {
       @Override

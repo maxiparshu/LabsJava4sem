@@ -21,7 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
 @Service
 @AllArgsConstructor
 public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
@@ -133,8 +132,7 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
       }
     });
   }
-
-  @SuppressWarnings({"checkstyle:OverloadMethodsDeclarationOrder"})
+  @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
   public void update(final LanguageDTO language)
       throws ResourceNotFoundException {
     update(Language.builder().name(language.getName())

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 
 
-@SuppressWarnings("checkstyle:MissingJavadocType")
+
 @Repository
 public interface CityRepository extends JpaRepository<City, Long> {
   Optional<City> getCityByName(@Param("name") String name);

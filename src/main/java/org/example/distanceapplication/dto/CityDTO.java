@@ -2,8 +2,6 @@ package org.example.distanceapplication.dto;
 
 import lombok.Data;
 
-@SuppressWarnings({"checkstyle:AbbreviationAsWordInName",
-    "checkstyle:MissingJavadocType"})
 @Data
 public class CityDTO {
   private Long id;
