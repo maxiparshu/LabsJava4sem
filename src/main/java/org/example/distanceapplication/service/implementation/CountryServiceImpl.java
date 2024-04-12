@@ -40,7 +40,7 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
     return i + 1;
   }
 
-  private long findFreeId(final HashSet<Long> usedIndexes) {
+  private long findFreeID(final HashSet<Long> usedIndexes) {
     var list = read();
     long i = 1;
     for (Country country : list) {
@@ -145,7 +145,7 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
                             final int i)
           throws SQLException {
         statement.setString(1, countries.get(i).getName());
-        long index = findFreeId(indexes);
+        long index = findFreeID(indexes);
         indexes.add(index);
         statement.setLong(2, index);
       }
