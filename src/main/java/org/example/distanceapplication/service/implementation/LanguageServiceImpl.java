@@ -32,9 +32,9 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
   @Override
   public void create(final Language language) {
     try {
-      getByID(language.getId());
-      throw new BadRequestException("Can't create language with id = "
-          + language.getId() + " already exist");
+      getByName(language.getName());
+      throw new BadRequestException("Can't create language with name = "
+          + language.getName() + " already exist");
     } catch (ResourceNotFoundException e) {
       repository.save(language);
       cache.put(language.getId(), language);
@@ -141,10 +141,14 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
 
   @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
   public void create(final LanguageDTO language) throws BadRequestException {
-    create(Language.builder().name(language.getName())
-        .id(findFreeId()).countries(new ArrayList<>()).build());
+    try {
+      getByName(language.getName());
+      throw new BadRequestException("Language with this id is existed");
+    } catch (ResourceNotFoundException e) {
+      create(Language.builder().name(language.getName())
+          .id(findFreeId()).countries(new ArrayList<>()).build());
+    }
   }
-
   private long findFreeId() {
     var list = read();
     long i = 1;

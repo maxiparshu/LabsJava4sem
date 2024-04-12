@@ -81,8 +81,7 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
           + city.getId() + " already exist");
     } catch (ResourceNotFoundException e) {
       repository.save(city);
-      cache.put(city.getId(), city);
-
+        cache.put(city.getId(), city);
     }
   }
 

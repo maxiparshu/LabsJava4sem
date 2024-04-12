@@ -159,17 +159,22 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
 
   @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
   public void create(final CountryDTO countryDto) throws BadRequestException {
-    var listLanguage = new HashSet<Language>();
-    for (String ptrLanguage : countryDto.getLanguages()) {
-      var language = languageRepository.getByName(ptrLanguage);
-      language.ifPresent(listLanguage::add);
+    try {
+      getByName(countryDto.getName());
+      throw new BadRequestException("Language with this id is existed");
+    } catch (ResourceNotFoundException e) {
+      var listLanguage = new HashSet<Language>();
+      for (String ptrLanguage : countryDto.getLanguages()) {
+        var language = languageRepository.getByName(ptrLanguage);
+        language.ifPresent(listLanguage::add);
+      }
+      var newCountry = Country.builder().name(countryDto.getName())
+          .languages(new HashSet<>()).id(findFreeID()).build();
+      for (Language language : listLanguage) {
+        newCountry.addLanguage(language);
+      }
+      create(newCountry);
     }
-    var newCountry = Country.builder().name(countryDto.getName())
-        .languages(new HashSet<>()).id(findFreeID()).build();
-    for (Language language : listLanguage) {
-      newCountry.addLanguage(language);
-    }
-    create(newCountry);
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
