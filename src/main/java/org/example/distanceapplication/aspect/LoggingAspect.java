@@ -17,12 +17,12 @@ public class LoggingAspect {
   @Pointcut("within(org.example.distanceapplication.controller..*)"
       + " || within(org.example.distanceapplication.service..*)"
       + " || within(org.example.distanceapplication.cache..*)")
-  public void allMethods() {
+    public void allMethods() {
 
-  }
+    }
 
-  @Pointcut("@annotation(AspectAnnotation)")
-  public void methodsWithAnnotation() {
+    @Pointcut("@annotation(AspectAnnotation)")
+    public void methodsWithAnnotation() {
 
   }
 
@@ -48,7 +48,6 @@ public class LoggingAspect {
       throw e;
     }
   }
-
   @AfterThrowing(pointcut = "allMethods()", throwing = "exception")
   public void logsExceptionsFromAnyLocation(final JoinPoint joinPoint,
                                             final Throwable exception) {

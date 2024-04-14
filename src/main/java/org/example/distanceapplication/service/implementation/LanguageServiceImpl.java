@@ -13,6 +13,7 @@ import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.entity.Language;
 import org.example.distanceapplication.exception.BadRequestException;
 import org.example.distanceapplication.exception.ResourceNotFoundException;
+import org.example.distanceapplication.exception.ServerException;
 import org.example.distanceapplication.repository.LanguageRepository;
 import org.example.distanceapplication.service.DataService;
 import org.springframework.data.domain.Sort;
@@ -36,7 +37,11 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
       throw new BadRequestException("Can't create language with name = "
           + language.getName() + " already exist");
     } catch (ResourceNotFoundException e) {
-      repository.save(language);
+      try {
+        repository.save(language);
+      } catch (Exception exc) {
+        throw new ServerException("Server problem");
+      }
       cache.put(language.getId(), language);
     }
   }
@@ -44,27 +49,39 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
 
   @Override
   public List<Language> read() {
-    return repository.findAll(Sort.by("id"));
+    try {
+      return repository.findAll(Sort.by("id"));
+    } catch (Exception exc) {
+      throw new ServerException("Server problem");
+    }
   }
 
   @Override
   public Language getByName(final String name)
       throws ResourceNotFoundException {
+    try {
     var optionalLanguage = repository.getByName(name);
-    if (optionalLanguage.isPresent()) {
-      cache.put(optionalLanguage.get().getId(), optionalLanguage.get());
-    } else {
-      throw new ResourceNotFoundException(
-          "Can't find language because with this name");
+      if (optionalLanguage.isPresent()) {
+        cache.put(optionalLanguage.get().getId(), optionalLanguage.get());
+      } else {
+        throw new ResourceNotFoundException(
+            "Can't find language because with this name");
+      }
+      return optionalLanguage.get();
+    } catch (Exception exc) {
+      throw new ServerException("Server problem");
     }
-    return optionalLanguage.get();
   }
 
   @Override
   public Language getByID(final Long id) throws ResourceNotFoundException {
     var optionalLanguage = cache.get(id);
     if (optionalLanguage.isEmpty()) {
-      optionalLanguage = repository.findById(id);
+      try {
+        optionalLanguage = repository.findById(id);
+      } catch (Exception exc) {
+        throw new ServerException("Server problem");
+      }
       if (optionalLanguage.isPresent()) {
         cache.put(id, optionalLanguage.get());
       } else {
@@ -78,16 +95,19 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
 
   @Override
   public void update(final Language language) throws ResourceNotFoundException {
+
+      try {
+        getByID(language.getId());
+      } catch (ResourceNotFoundException e) {
+        throw new ResourceNotFoundException("No info with this id");
+      }
+    cache.remove(language.getId());
     try {
-      getByID(language.getId());
-      cache.remove(language.getId());
-      repository.save(language);
-      cache.put(language.getId(), language);
-    } catch (ResourceNotFoundException e) {
-      throw new ResourceNotFoundException(
-          "Can't update language with this id = "
-              + language.getId() + DONT_EXIST);
+    repository.save(language);
+    } catch (Exception exc) {
+      throw new ServerException("Server problem");
     }
+    cache.put(language.getId(), language);
   }
 
   @Override

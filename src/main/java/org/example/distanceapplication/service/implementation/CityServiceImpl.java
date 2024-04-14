@@ -13,6 +13,7 @@ import org.example.distanceapplication.entity.City;
 import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.exception.BadRequestException;
 import org.example.distanceapplication.exception.ResourceNotFoundException;
+import org.example.distanceapplication.exception.ServerException;
 import org.example.distanceapplication.repository.CityRepository;
 import org.example.distanceapplication.repository.CountryRepository;
 import org.example.distanceapplication.service.DataService;
@@ -80,7 +81,11 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
       throw new BadRequestException("Can't create city with this id"
           + city.getId() + " already exist");
     } catch (ResourceNotFoundException e) {
-      repository.save(city);
+      try {
+        repository.save(city);
+      } catch (Exception exception) {
+      throw new ServerException("Sever problem");
+      }
         cache.put(city.getId(), city);
     }
   }
@@ -123,12 +128,16 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
   public City getByID(final Long id) throws ResourceNotFoundException {
     Optional<City> optionalCity = cache.get(id);
     if (optionalCity.isEmpty()) {
-      optionalCity = repository.getCityById(id);
-      if (optionalCity.isPresent()) {
-        cache.put(id, optionalCity.get());
-      } else {
-        throw new ResourceNotFoundException(
-            "Cannot find city with id = " + id + DONT_EXIST);
+      try {
+        optionalCity = repository.getCityById(id);
+        if (optionalCity.isPresent()) {
+          cache.put(id, optionalCity.get());
+        } else {
+          throw new ResourceNotFoundException(
+              "Cannot find city with id = " + id + DONT_EXIST);
+        }
+      } catch (Exception e) {
+        throw new ServerException("Sever problem");
       }
     }
     return optionalCity.get();

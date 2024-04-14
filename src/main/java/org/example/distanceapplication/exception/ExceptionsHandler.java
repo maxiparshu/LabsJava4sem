@@ -9,7 +9,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @SuppressWarnings("checkstyle:MissingJavadocType")
 @RestControllerAdvice
 public class ExceptionsHandler {
-
+  @ExceptionHandler(ServerException.class)
+  public ResponseEntity<ExceptionDetails> serverException(
+      final ServerException exception) {
+    ExceptionDetails exceptionDetails = new ExceptionDetails(
+        new Date(),
+        exception.getMessage()
+    );
+    return new ResponseEntity<>(exceptionDetails,
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ExceptionDetails> resourceNotFoundException(
       final ResourceNotFoundException exception) {
