@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface DataService<T, D> {
-  void create(T entity) throws BadRequestException;
+  T create(T entity) throws BadRequestException;
 
   List<T> read();
 

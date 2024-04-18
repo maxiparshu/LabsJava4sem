@@ -69,8 +69,10 @@ public class CityController {
         firstCityInfo, secondCityInfo);
     if (distance != -1) {
       var objects = new HashMap<String, String>();
-      objects.put("First city info", firstCityInfo.toString());
-      objects.put("Second city info", secondCityInfo.toString());
+      objects.put("First city info: ", firstCityInfo.getName() + " "
+          + firstCityInfo.getLongitude() + " " + firstCityInfo.getLatitude());
+      objects.put("Second city info: ", secondCityInfo.getName() + " "
+          + secondCityInfo.getLongitude() + " " + secondCityInfo.getLatitude());
       objects.put("Distance", Double.toString(distance));
       return new ResponseEntity<>(objects, HttpStatus.OK);
     }
@@ -116,7 +118,7 @@ public class CityController {
   }
 
   @AspectAnnotation
-  @GetMapping("/get_between_latitude")
+  @GetMapping("/getBetweenLatitude")
   public ResponseEntity<List<City>> getCitiesBetween(
       final @RequestParam(name = "first") Double first,
       final @RequestParam(name = "second") Double second) {

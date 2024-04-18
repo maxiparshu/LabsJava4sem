@@ -42,14 +42,11 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
 
   private long findFreeID(final HashSet<Long> usedIndexes) {
     var list = read();
-    long i = 1;
+    long i = usedIndexes.isEmpty() ? 1 : usedIndexes
+        .iterator().next();
     for (Country country : list) {
       if (country.getId() != i) {
-        if (!usedIndexes.contains(i)) {
-          return i;
-        } else {
-          i = country.getId();
-        }
+        return i;
       }
       i++;
     }
@@ -57,16 +54,10 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   }
 
   @Override
-  public void create(final Country country) throws BadRequestException {
-    try {
-      getByID(country.getId());
-      throw new BadRequestException("Can't create country with this id = "
-          + country.getId() + " already exist");
-    } catch (ResourceNotFoundException e) {
-      cache.put(country.getId(), country);
-      countryRepository.save(country);
-
-    }
+  public Country create(final Country country) {
+    cache.put(country.getId(), country);
+    countryRepository.save(country);
+    return country;
   }
 
   @Override
@@ -105,18 +96,9 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   }
 
   @Override
-  public void update(final Country country)
-      throws ResourceNotFoundException {
-    if (country == null) {
-      throw new ResourceNotFoundException("Can't update country");
-    }
-    if (countryRepository.getCountryById(country.getId()).isPresent()) {
-      cache.remove(country.getId());
-      countryRepository.save(country);
-    } else {
-      throw new ResourceNotFoundException(
-          "Can't update country with this id = ");
-    }
+  public void update(final Country country) {
+    cache.remove(country.getId());
+    countryRepository.save(country);
   }
 
   @Override
@@ -161,7 +143,8 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   public void create(final CountryDTO countryDto) throws BadRequestException {
     try {
       getByName(countryDto.getName());
-      throw new BadRequestException("Language with this id is existed");
+      cache.remove(countryDto.getId());
+      throw new BadRequestException("Country with this name is existed");
     } catch (ResourceNotFoundException e) {
       var listLanguage = new HashSet<Language>();
       for (String ptrLanguage : countryDto.getLanguages()) {
@@ -178,7 +161,7 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   }
 
   @SuppressWarnings("checkstyle:MissingJavadocMethod")
-  public void updateWithExist(final CountryDTO country)
+  public void update(final CountryDTO country)
       throws ResourceNotFoundException {
     if (countryRepository.getCountryById(country.getId()).isEmpty()) {
       throw new ResourceNotFoundException(
@@ -202,16 +185,18 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   public void modifyLanguage(final CountryDTO countryDto,
                              final boolean deleteFlag)
       throws ResourceNotFoundException {
-    var country = getByID(countryDto.getId());
-    if (country != null) {
+    try {
+      var country = getByID(countryDto.getId());
       for (String language : countryDto.getLanguages()) {
         var tempLanguage = languageRepository.getByName(language);
         tempLanguage.ifPresent(!deleteFlag
             ? country::addLanguage : country::removeLanguage);
       }
+      cache.remove(country.getId());
+      countryRepository.save(country);
+    } catch (ResourceNotFoundException e) {
+      throw new ResourceNotFoundException("Cant modify language");
     }
-    assert country != null;
-    update(country);
   }
 
   public List<Country> getByLanguage(final Long id)

@@ -43,7 +43,7 @@ public class CountryController {
 
   @AspectAnnotation
   @GetMapping(value = "/find", produces = "application/json")
-  public ResponseEntity<Country> getCityInfoById(
+  public ResponseEntity<Country> getCountryById(
       final @RequestParam(name = "id") Long id)
       throws ResourceNotFoundException {
     var country = countryService.getByID(id);
@@ -54,7 +54,7 @@ public class CountryController {
   @PutMapping("/update")
   public HttpStatus update(final @RequestBody CountryDTO countryDto)
       throws ResourceNotFoundException {
-    countryService.updateWithExist(countryDto);
+    countryService.update(countryDto);
     return HttpStatus.OK;
   }
 
@@ -99,5 +99,12 @@ public class CountryController {
       throws ResourceNotFoundException {
     var countries = countryService.getByLanguage(id);
     return new ResponseEntity<>(countries, HttpStatus.OK);
+  }
+  @AspectAnnotation
+  @PostMapping("/bulkCreate")
+  public HttpStatus bulkCreate(
+      @RequestBody final List<CountryDTO> countries) {
+    countryService.createBulk(countries);
+    return HttpStatus.OK;
   }
 }
