@@ -47,6 +47,7 @@ public class CityServiceImplTest {
     assertEquals(expectedCities, actualCities);
   }
 
+
   @Test
   public void createCityWithCountrySuccess() {
     CityDTO city = CityDTO.builder()
@@ -54,7 +55,10 @@ public class CityServiceImplTest {
         .latitude(13.4543)
         .longitude(12.4445)
         .build();
+    when(repository.findAll(Sort.by("id")))
+        .thenReturn(new ArrayList<>());
     var createdCity = service.createWithCountry(city, Country.builder().name("Japan").id(103L).build());
+    assertEquals(createdCity.getId(), 1);
     assertEquals(createdCity.getName(), city.getName());
     assertEquals(createdCity.getLatitude(), city.getLatitude());
     assertEquals(createdCity.getLongitude(), city.getLongitude());
@@ -301,7 +305,6 @@ public class CityServiceImplTest {
         + "VALUES (?, ?, ?, ?, ?)";
     verify(jdbcTemplate, times(1))
         .batchUpdate(eq(sql), any(BatchPreparedStatementSetter.class));
-    
   }
 
   @Test
@@ -311,5 +314,46 @@ public class CityServiceImplTest {
     service.getBetweenLatitudes(first, second);
     verify(repository, times(1))
         .findAllCityWithLatitudeBetween(first, second);
+  }
+
+  @Test
+  public void notEmptyRepositoryCreate() {
+    CityDTO city = CityDTO.builder()
+        .name("Tokyko")
+        .latitude(13.4543)
+        .longitude(12.4445)
+        .build();
+    var list = Arrays.asList(City.builder().id(1L).build()
+        , City.builder().id(2L).build());
+    when(repository.findAll(Sort.by("id")))
+        .thenReturn(list);
+    var createdCity = service.createWithCountry(city, Country.builder().name("Japan").id(103L).build());
+    assertEquals(createdCity.getId(), 3);
+    assertEquals(createdCity.getName(), city.getName());
+    assertEquals(createdCity.getLatitude(), city.getLatitude());
+    assertEquals(createdCity.getLongitude(), city.getLongitude());
+    assertEquals(createdCity.getCountry().getName(), "Japan");
+    verify(repository, times(1)).save(any(City.class));
+    verify(cache, times(1)).put(anyLong(), any(City.class));
+  }
+  @Test
+  public void notEmptyRepositoryWithGapCreate() {
+    CityDTO city = CityDTO.builder()
+        .name("Tokyko")
+        .latitude(13.4543)
+        .longitude(12.4445)
+        .build();
+    var list = Arrays.asList(City.builder().id(1L).build()
+        , City.builder().id(3L).build());
+    when(repository.findAll(Sort.by("id")))
+        .thenReturn(list);
+    var createdCity = service.createWithCountry(city, Country.builder().name("Japan").id(103L).build());
+    assertEquals(createdCity.getId(), 2);
+    assertEquals(createdCity.getName(), city.getName());
+    assertEquals(createdCity.getLatitude(), city.getLatitude());
+    assertEquals(createdCity.getLongitude(), city.getLongitude());
+    assertEquals(createdCity.getCountry().getName(), "Japan");
+    verify(repository, times(1)).save(any(City.class));
+    verify(cache, times(1)).put(anyLong(), any(City.class));
   }
 }

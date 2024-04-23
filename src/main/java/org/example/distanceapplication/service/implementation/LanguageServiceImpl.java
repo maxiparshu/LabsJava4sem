@@ -85,15 +85,15 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
 
   @Override
   public void delete(final Long id) throws ResourceNotFoundException {
-    Language language = getByID(id);
-    if (language != null) {
+    try {
+      Language language = getByID(id);
       List<Country> existingCountries = language.getCountries();
       for (Country country : existingCountries) {
         country.removeLanguage(language);
       }
       cache.remove(id);
       repository.deleteById(language.getId());
-    } else {
+    } catch (ResourceNotFoundException e) {
       throw new ResourceNotFoundException(
           "Can't delete language with this id = "
               + id + DONT_EXIST);
@@ -135,14 +135,15 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
   }
 
   @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
-  public void create(final LanguageDTO language) throws BadRequestException {
+  public Language create(final LanguageDTO language)
+      throws BadRequestException {
     try {
       getByName(language.getName());
       throw new BadRequestException("Language with this id is existed");
     } catch (ResourceNotFoundException e) {
       var newLanguage = Language.builder().name(language.getName())
           .id(findFreeId()).countries(new ArrayList<>()).build();
-      create(newLanguage);
+      return create(newLanguage);
     }
   }
 
@@ -155,7 +156,7 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
       }
       i++;
     }
-    return i + 1;
+    return i;
   }
 
   private long findFreeId(final HashSet<Long> usedIndexes) {
@@ -169,5 +170,5 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
       i++;
     }
     return i + 1;
-    }
+  }
 }

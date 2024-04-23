@@ -99,7 +99,7 @@ public class LanguageControllerTest {
   }
 
   @Test
-  void shouldUpdateCountry() throws ResourceNotFoundException {
+  void shouldUpdateLanguage() throws ResourceNotFoundException {
     var language = LanguageDTO.builder()
         .id(26L)
         .name("String")
@@ -109,7 +109,7 @@ public class LanguageControllerTest {
   }
 
   @Test
-  void shouldNotUpdateCountry() throws ResourceNotFoundException {
+  void shouldNotUpdateLanguage() throws ResourceNotFoundException {
     var language = LanguageDTO.builder()
         .id(26L)
         .name("String")

@@ -126,7 +126,8 @@ public class CountryServiceImplTest {
         .thenReturn(Optional.empty());
     when(countryRepository.findAll(Sort.by("id")))
         .thenReturn(new ArrayList<>());
-    service.create(newCountry);
+    var createdCountry = service.create(newCountry);
+    assertEquals(createdCountry.getId(), 1);
     verify(countryRepository, times(1))
         .save(any(Country.class));
     verify(cache, times(1))
@@ -329,5 +330,84 @@ public class CountryServiceImplTest {
     String sql = "INSERT into country (name, id) VALUES (?, ?)";
     verify(jdbcTemplate, times(1))
         .batchUpdate(eq(sql), any(BatchPreparedStatementSetter.class));
+  }
+
+  @Test
+  public void notEmptyRepositoryCreate() {
+    var country = CountryDTO.builder()
+        .name("Tokyko")
+        .languages(List.of("Japan"))
+        .build();
+    var list = Arrays.asList(Country.builder().id(1L).build()
+        , Country.builder().id(2L).build());
+    when(countryRepository.findAll(Sort.by("id")))
+        .thenReturn(list);
+    when(languageRepository.getByName(anyString()))
+        .thenReturn(Optional.empty());
+    var createdCountry = service.create(country);
+    assertEquals(createdCountry.getId(), 3);
+    assertEquals(createdCountry.getName(), country.getName());
+    verify(countryRepository, times(1))
+        .save(any(Country.class));
+    verify(cache, times(1)).put(anyLong(), any(Country.class));
+  }
+  @Test
+  public void notEmptyRepositoryWithGapCreate() {
+    var country = CountryDTO.builder()
+        .name("Tokyko")
+        .languages(List.of("Japan"))
+        .build();
+    var list = Arrays.asList(Country.builder().id(1L).build()
+        , Country.builder().id(3L).build());
+    when(countryRepository.findAll(Sort.by("id")))
+        .thenReturn(list);
+    when(languageRepository.getByName(anyString()))
+        .thenReturn(Optional.empty());
+    var createdCountry = service.create(country);
+    assertEquals(createdCountry.getId(), 2);
+    assertEquals(createdCountry.getName(), country.getName());
+    verify(countryRepository, times(1))
+        .save(any(Country.class));
+    verify(cache, times(1)).put(anyLong(), any(Country.class));
+  }
+  @Test
+  public void updateCountryByDtoWithLanguage() throws ResourceNotFoundException {
+    var newCountry = CountryDTO.builder()
+        .name("Belarus")
+        .languages(List.of("English"))
+        .build();
+    var language = Language.builder()
+            .name("English").build();
+    when(countryRepository.getCountryById(newCountry.getId()))
+        .thenReturn(Optional.of(new Country()));
+    when(languageRepository.getByName(anyString()))
+        .thenReturn(Optional.of(language));
+    service.update(newCountry);
+    verify(countryRepository, times(1))
+        .save(any(Country.class));
+    verify(cache, times(1))
+        .remove(newCountry.getId());
+  }
+  @Test
+  public void createCountryByDtoWithLanguage() {
+    var newCountry = CountryDTO.builder()
+        .name("Belarus")
+        .languages(List.of("English"))
+        .build();
+    var language = Language.builder()
+        .name("English").build();
+    when(countryRepository.getByName(newCountry.getName()))
+        .thenReturn(Optional.empty());
+    when(languageRepository.getByName(anyString()))
+        .thenReturn(Optional.of(language));
+    when(countryRepository.findAll(Sort.by("id")))
+        .thenReturn(new ArrayList<>());
+    var createdCountry = service.create(newCountry);
+    assertTrue(createdCountry.getLanguages().contains(language));
+    assertEquals(createdCountry.getId(), 1);
+    verify(countryRepository, times(1))
+        .save(any(Country.class));
+    verify(cache, times(1))
+        .put(anyLong(), any(Country.class));
   }
 }

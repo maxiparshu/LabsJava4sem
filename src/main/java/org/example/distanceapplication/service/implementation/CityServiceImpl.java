@@ -39,7 +39,7 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
       }
       i++;
     }
-    return i + 1;
+    return i;
   }
 
   private long findFreeId(final HashSet<Long> usedIndexes) {
@@ -66,9 +66,8 @@ public class CityServiceImpl implements DataService<City, CityDTO> {
       newCity = City.builder().name(city.getName())
           .latitude(city.getLatitude()).longitude(city.getLongitude())
           .country(country).id(findFreeId()).build();
-      create(newCity);
+      return create(newCity);
     }
-    return newCity;
   }
 
   @Override

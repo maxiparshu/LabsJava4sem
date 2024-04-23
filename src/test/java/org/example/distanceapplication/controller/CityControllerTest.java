@@ -218,6 +218,18 @@ public class CityControllerTest {
     var responseEntity = cityController.getDistance("Minsk", "Pinsk");
     assertEquals("221.2667", Objects.requireNonNull(responseEntity.getBody()).get("Distance"));
   }
+  @Test
+  void shouldChangeStatusCalculateDistance()
+      throws ResourceNotFoundException {
+    var firstCityInfo = new City();
+    var secondCityInfo = new City();
+    when(cityService.getByName("Minsk")).thenReturn(firstCityInfo);
+    when(cityService.getByName("Pinsk")).thenReturn(secondCityInfo);
+    when(distanceService.getDistanceInKilometres(firstCityInfo,
+        secondCityInfo)).thenReturn(-1d);
+    var responseEntity = cityController.getDistance("Minsk", "Pinsk");
+    assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+  }
 
   @Test
   void shouldNotCalculateDistance() throws ResourceNotFoundException {
@@ -235,5 +247,12 @@ public class CityControllerTest {
     verify(cityService, times(1))
         .getBetweenLatitudes(first, second);
   }
-
+  @Test
+  void shouldFindCitiesBetweenLatitudesFirstBigger() {
+    Double first = 20D;
+    Double second = 10D;
+    cityController.getCitiesBetween(first, second);
+    verify(cityService, times(1))
+        .getBetweenLatitudes(second, first);
+  }
 }

@@ -37,7 +37,7 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
       }
       i++;
     }
-    return i + 1;
+    return i;
   }
 
   private long findFreeID(final HashSet<Long> usedIndexes) {
@@ -104,10 +104,11 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   @Override
   public void delete(final Long id)
       throws ResourceNotFoundException {
-    if (getByID(id) != null) {
+    try {
+      getByID(id);
       countryRepository.deleteById(id);
       cache.remove(id);
-    } else {
+    } catch (ResourceNotFoundException e) {
       throw new ResourceNotFoundException(
           "Can't delete country with id = " + id + DONT_EXIST);
     }
@@ -140,7 +141,8 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
   }
 
   @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
-  public void create(final CountryDTO countryDto) throws BadRequestException {
+  public Country create(final CountryDTO countryDto)
+      throws BadRequestException {
     try {
       getByName(countryDto.getName());
       cache.remove(countryDto.getId());
@@ -156,7 +158,7 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
       for (Language language : listLanguage) {
         newCountry.addLanguage(language);
       }
-      create(newCountry);
+      return create(newCountry);
     }
   }
 

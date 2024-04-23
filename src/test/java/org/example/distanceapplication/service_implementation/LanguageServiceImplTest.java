@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.example.distanceapplication.cache.LRUCache;
 import org.example.distanceapplication.dto.LanguageDTO;
+import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.entity.Language;
 import org.example.distanceapplication.exception.BadRequestException;
 import org.example.distanceapplication.exception.ResourceNotFoundException;
@@ -46,7 +47,7 @@ public class LanguageServiceImplTest {
     var actualCities = service.read();
     assertEquals(expectedLanguage, actualCities);
   }
-  
+
   @Test
   public void findLanguageByIdNotInCache()
       throws ResourceNotFoundException {
@@ -124,7 +125,8 @@ public class LanguageServiceImplTest {
         .thenReturn(Optional.empty());
     when(repository.findAll(Sort.by("id")))
         .thenReturn(new ArrayList<>());
-    service.create(newLanguage);
+    var createdLanguage = service.create(newLanguage);
+    assertEquals(createdLanguage.getId(), 1);
     verify(repository, times(1))
         .save(any(Language.class));
     verify(cache, times(1))
@@ -206,11 +208,17 @@ public class LanguageServiceImplTest {
   @Test
   public void deleteLanguageValidId() throws ResourceNotFoundException {
     Long id = 22L;
+    var language = Language.builder()
+        .name("Russian")
+        .countries(new ArrayList<>())
+        .id(22L).build();
+    var country = mock(Country.class);
+    language.setCountries(List.of(country));
     when(cache.get(id)).thenReturn(Optional.empty());
     when(repository.getLanguageById(id))
-        .thenReturn(Optional.of(Language.builder()
-            .countries(new ArrayList<>())
-            .id(id).build()));
+        .thenReturn(Optional.of(language));
+    doAnswer(invocationOnMock -> null).when(country)
+            .removeLanguage(any(Language.class));
     service.delete(id);
     verify(cache, times(1))
         .remove(id);
@@ -243,5 +251,43 @@ public class LanguageServiceImplTest {
     String sql = "INSERT into language (name, id) VALUES (?, ?)";
     verify(jdbcTemplate, times(1))
         .batchUpdate(eq(sql), any(BatchPreparedStatementSetter.class));
+  }
+
+  @Test
+  public void createLanguageByDtoNotEmptyList() {
+    var newLanguage = LanguageDTO.builder()
+        .name("Russian")
+        .build();
+    var list = Arrays.asList(Language.builder().id(1L).build()
+        , Language.builder().id(2L).build());
+    when(repository.getByName(newLanguage.getName()))
+        .thenReturn(Optional.empty());
+    when(repository.findAll(Sort.by("id")))
+        .thenReturn(list);
+    var createdLanguage = service.create(newLanguage);
+    assertEquals(createdLanguage.getId(), 3);
+    verify(repository, times(1))
+        .save(any(Language.class));
+    verify(cache, times(1))
+        .put(anyLong(), any(Language.class));
+  }
+
+  @Test
+  public void createLanguageByDtoNotEmptyListWithGap() {
+    var newLanguage = LanguageDTO.builder()
+        .name("Russian")
+        .build();
+    var list = Arrays.asList(Language.builder().id(1L).build()
+        , Language.builder().id(3L).build());
+    when(repository.getByName(newLanguage.getName()))
+        .thenReturn(Optional.empty());
+    when(repository.findAll(Sort.by("id")))
+        .thenReturn(list);
+    var createdLanguage = service.create(newLanguage);
+    assertEquals(createdLanguage.getId(), 2);
+    verify(repository, times(1))
+        .save(any(Language.class));
+    verify(cache, times(1))
+        .put(anyLong(), any(Language.class));
   }
 }
