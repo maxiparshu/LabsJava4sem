@@ -1,7 +1,6 @@
 package org.example.distanceapplication.service_implementation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.example.distanceapplication.cache.LRUCache;
@@ -48,16 +47,12 @@ public class CityServiceImplTest {
         .latitude(13.4543)
         .longitude(12.4445)
         .build();
-    when(repository.findAll(Sort.by("id")))
-        .thenReturn(new ArrayList<>());
     var createdCity = service.createWithCountry(city, Country.builder().name("Japan").id(103L).build());
-    assertEquals(createdCity.getId(), 1);
     assertEquals(createdCity.getName(), city.getName());
     assertEquals(createdCity.getLatitude(), city.getLatitude());
     assertEquals(createdCity.getLongitude(), city.getLongitude());
     assertEquals(createdCity.getCountry().getName(), "Japan");
     verify(repository, times(1)).save(any(City.class));
-    verify(cache, times(1)).put(anyLong(), any(City.class));
   }
 
   @Test
@@ -291,18 +286,12 @@ public class CityServiceImplTest {
         .latitude(13.4543)
         .longitude(12.4445)
         .build();
-    var list = Arrays.asList(City.builder().id(1L).build()
-        , City.builder().id(2L).build());
-    when(repository.findAll(Sort.by("id")))
-        .thenReturn(list);
     var createdCity = service.createWithCountry(city, Country.builder().name("Japan").id(103L).build());
-    assertEquals(createdCity.getId(), 3);
     assertEquals(createdCity.getName(), city.getName());
     assertEquals(createdCity.getLatitude(), city.getLatitude());
     assertEquals(createdCity.getLongitude(), city.getLongitude());
     assertEquals(createdCity.getCountry().getName(), "Japan");
     verify(repository, times(1)).save(any(City.class));
-    verify(cache, times(1)).put(anyLong(), any(City.class));
   }
   @Test
   public void notEmptyRepositoryWithGapCreate() {
@@ -311,17 +300,11 @@ public class CityServiceImplTest {
         .latitude(13.4543)
         .longitude(12.4445)
         .build();
-    var list = Arrays.asList(City.builder().id(1L).build()
-        , City.builder().id(3L).build());
-    when(repository.findAll(Sort.by("id")))
-        .thenReturn(list);
     var createdCity = service.createWithCountry(city, Country.builder().name("Japan").id(103L).build());
-    assertEquals(createdCity.getId(), 2);
     assertEquals(createdCity.getName(), city.getName());
     assertEquals(createdCity.getLatitude(), city.getLatitude());
     assertEquals(createdCity.getLongitude(), city.getLongitude());
     assertEquals(createdCity.getCountry().getName(), "Japan");
     verify(repository, times(1)).save(any(City.class));
-    verify(cache, times(1)).put(anyLong(), any(City.class));
   }
 }

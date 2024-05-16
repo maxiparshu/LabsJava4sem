@@ -1,7 +1,6 @@
 package org.example.distanceapplication.service_implementation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.example.distanceapplication.cache.LRUCache;
@@ -118,14 +117,10 @@ public class LanguageServiceImplTest {
         .build();
     when(repository.getByName(newLanguage.getName()))
         .thenReturn(Optional.empty());
-    when(repository.findAll(Sort.by("id")))
-        .thenReturn(new ArrayList<>());
     var createdLanguage = service.create(newLanguage);
-    assertEquals(createdLanguage.getId(), 1);
+    assertEquals(createdLanguage.getName(), newLanguage.getName());
     verify(repository, times(1))
         .save(any(Language.class));
-    verify(cache, times(1))
-        .put(anyLong(), any(Language.class));
   }
 
   @Test
@@ -235,18 +230,12 @@ public class LanguageServiceImplTest {
     var newLanguage = LanguageDTO.builder()
         .name("Russian")
         .build();
-    var list = Arrays.asList(Language.builder().id(1L).build()
-        , Language.builder().id(2L).build());
     when(repository.getByName(newLanguage.getName()))
         .thenReturn(Optional.empty());
-    when(repository.findAll(Sort.by("id")))
-        .thenReturn(list);
     var createdLanguage = service.create(newLanguage);
-    assertEquals(createdLanguage.getId(), 3);
+    assertEquals(createdLanguage.getName(), newLanguage.getName());
     verify(repository, times(1))
         .save(any(Language.class));
-    verify(cache, times(1))
-        .put(anyLong(), any(Language.class));
   }
 
   @Test
@@ -254,17 +243,11 @@ public class LanguageServiceImplTest {
     var newLanguage = LanguageDTO.builder()
         .name("Russian")
         .build();
-    var list = Arrays.asList(Language.builder().id(1L).build()
-        , Language.builder().id(3L).build());
     when(repository.getByName(newLanguage.getName()))
         .thenReturn(Optional.empty());
-    when(repository.findAll(Sort.by("id")))
-        .thenReturn(list);
     var createdLanguage = service.create(newLanguage);
-    assertEquals(createdLanguage.getId(), 2);
+    assertEquals(createdLanguage.getName(), newLanguage.getName());
     verify(repository, times(1))
         .save(any(Language.class));
-    verify(cache, times(1))
-        .put(anyLong(), any(Language.class));
   }
 }

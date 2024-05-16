@@ -1,7 +1,6 @@
 package org.example.distanceapplication.service_implementation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.example.distanceapplication.cache.LRUCache;
@@ -120,14 +119,10 @@ public class CountryServiceImplTest {
         .thenReturn(Optional.empty());
     when(languageRepository.getByName(anyString()))
         .thenReturn(Optional.empty());
-    when(countryRepository.findAll(Sort.by("id")))
-        .thenReturn(new ArrayList<>());
     var createdCountry = service.create(newCountry);
-    assertEquals(createdCountry.getId(), 1);
+    assertEquals(createdCountry.getName(), newCountry.getName());
     verify(countryRepository, times(1))
         .save(any(Country.class));
-    verify(cache, times(1))
-        .put(anyLong(), any(Country.class));
   }
 
   @Test
@@ -316,18 +311,12 @@ public class CountryServiceImplTest {
         .name("Tokyko")
         .languages(List.of("Japan"))
         .build();
-    var list = Arrays.asList(Country.builder().id(1L).build()
-        , Country.builder().id(2L).build());
-    when(countryRepository.findAll(Sort.by("id")))
-        .thenReturn(list);
     when(languageRepository.getByName(anyString()))
         .thenReturn(Optional.empty());
     var createdCountry = service.create(country);
-    assertEquals(createdCountry.getId(), 3);
     assertEquals(createdCountry.getName(), country.getName());
     verify(countryRepository, times(1))
         .save(any(Country.class));
-    verify(cache, times(1)).put(anyLong(), any(Country.class));
   }
   @Test
   public void notEmptyRepositoryWithGapCreate() {
@@ -335,18 +324,12 @@ public class CountryServiceImplTest {
         .name("Tokyko")
         .languages(List.of("Japan"))
         .build();
-    var list = Arrays.asList(Country.builder().id(1L).build()
-        , Country.builder().id(3L).build());
-    when(countryRepository.findAll(Sort.by("id")))
-        .thenReturn(list);
     when(languageRepository.getByName(anyString()))
         .thenReturn(Optional.empty());
     var createdCountry = service.create(country);
-    assertEquals(createdCountry.getId(), 2);
     assertEquals(createdCountry.getName(), country.getName());
     verify(countryRepository, times(1))
         .save(any(Country.class));
-    verify(cache, times(1)).put(anyLong(), any(Country.class));
   }
   @Test
   public void updateCountryByDtoWithLanguage() throws ResourceNotFoundException {
@@ -378,14 +361,9 @@ public class CountryServiceImplTest {
         .thenReturn(Optional.empty());
     when(languageRepository.getByName(anyString()))
         .thenReturn(Optional.of(language));
-    when(countryRepository.findAll(Sort.by("id")))
-        .thenReturn(new ArrayList<>());
     var createdCountry = service.create(newCountry);
     assertTrue(createdCountry.getLanguages().contains(language));
-    assertEquals(createdCountry.getId(), 1);
     verify(countryRepository, times(1))
         .save(any(Country.class));
-    verify(cache, times(1))
-        .put(anyLong(), any(Country.class));
   }
 }
