@@ -1,10 +1,6 @@
 package org.example.distanceapplication.service.implementation;
 
-import jakarta.transaction.Transactional;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.example.distanceapplication.cache.LRUCache;
@@ -16,17 +12,14 @@ import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.example.distanceapplication.repository.LanguageRepository;
 import org.example.distanceapplication.service.DataService;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 
 @Service
 @AllArgsConstructor
-public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
+public class LanguageServiceImpl implements DataService<Language> {
   private final LanguageRepository repository;
   private final LRUCache<Long, Language> cache;
-  private final JdbcTemplate jdbcTemplate;
   private static final String DONT_EXIST = " doesn't exist";
 
   @Override
@@ -100,33 +93,6 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
     }
   }
 
-  @Transactional
-  @Override
-  public void createBulk(final List<LanguageDTO> list)
-      throws BadRequestException {
-    List<Language> languages = list.stream()
-        .map(languageDTO -> Language.builder()
-            .name(languageDTO.getName()).build()).toList();
-    String sql = "INSERT into language (name, id) VALUES (?, ?)";
-    var indexes = new HashSet<Long>();
-    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-      @Override
-      public void setValues(final PreparedStatement statement,
-                            final int i)
-          throws SQLException {
-        long index = findFreeId(indexes);
-        indexes.add(index);
-        statement.setString(1, languages.get(i).getName());
-        statement.setLong(2, index);
-      }
-
-      @Override
-      public int getBatchSize() {
-        return languages.size();
-      }
-    });
-  }
-
   @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
   public void update(final LanguageDTO language)
       throws ResourceNotFoundException {
@@ -142,33 +108,10 @@ public class LanguageServiceImpl implements DataService<Language, LanguageDTO> {
       throw new BadRequestException("Language with this id is existed");
     } catch (ResourceNotFoundException e) {
       var newLanguage = Language.builder().name(language.getName())
-          .id(findFreeId()).countries(new ArrayList<>()).build();
+          .countries(new ArrayList<>()).build();
       return create(newLanguage);
     }
   }
 
-  private long findFreeId() {
-    var list = read();
-    long i = 1;
-    for (Language language : list) {
-      if (language.getId() != i) {
-        return i;
-      }
-      i++;
-    }
-    return i;
-  }
 
-  private long findFreeId(final HashSet<Long> usedIndexes) {
-    var list = read();
-    long i = usedIndexes.isEmpty() ? 1 : usedIndexes
-        .iterator().next();
-    for (Language language : list) {
-      if (language.getId() != i) {
-        return i;
-      }
-      i++;
-    }
-    return i + 1;
-  }
 }

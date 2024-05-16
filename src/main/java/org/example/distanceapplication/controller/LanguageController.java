@@ -1,6 +1,7 @@
 package org.example.distanceapplication.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.example.distanceapplication.aspect.AspectAnnotation;
@@ -11,6 +12,7 @@ import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.example.distanceapplication.service.implementation.LanguageServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/languages")
 @AllArgsConstructor
+@CrossOrigin
 public class LanguageController {
   private final LanguageServiceImpl languageService;
 
   @GetMapping(value = "/all", produces = "application/json")
-  public ResponseEntity<List<Language>> getAll() {
-    return new ResponseEntity<>(languageService.read(), HttpStatus.OK);
+  public List<Language> getAll() {
+    return languageService.read();
   }
 
   @AspectAnnotation
@@ -77,8 +80,8 @@ public class LanguageController {
   @AspectAnnotation
   @PostMapping("/bulkCreate")
   public HttpStatus bulkCreate(
-      @RequestBody final List<LanguageDTO> languageDTOS) {
-    languageService.createBulk(languageDTOS);
+      @RequestBody final LanguageDTO[] languageDTOS) {
+    Arrays.stream(languageDTOS).forEach(languageService::create);
     return HttpStatus.OK;
   }
 }

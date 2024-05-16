@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -28,8 +27,8 @@ public class CountryControllerTest {
 
   @Test
   void shouldReturnAll() {
-    ResponseEntity<List<Country>> responseEntity = countryController.getAll();
-    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    countryController.getAll();
+    verify(countryService, times(1)).read();
   }
 
   @Test
@@ -158,7 +157,12 @@ public class CountryControllerTest {
   }
   @Test
   void bulkInsert() {
-    HttpStatus httpStatus = countryController.bulkCreate(new ArrayList<>());
+    var country = CountryDTO.builder()
+        .name("test")
+        .id(2L).build();
+    var countries = List.of(country).toArray(new CountryDTO[1]);
+    HttpStatus httpStatus = countryController.bulkCreate(countries);
+    verify(countryService, times(1)).create(country);
     assertEquals(HttpStatus.OK, httpStatus);
   }
   @Test

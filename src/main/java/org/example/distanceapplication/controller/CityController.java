@@ -1,6 +1,7 @@
 package org.example.distanceapplication.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.example.distanceapplication.service.implementation.CityServiceImpl;
 import org.example.distanceapplication.service.implementation.CountryServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,14 +30,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/cities")
 @AllArgsConstructor
+@CrossOrigin
 public class CityController {
   private final CityServiceImpl dataService;
   private final DistanceService distanceService;
   private final CountryServiceImpl countryService;
 
   @GetMapping(value = "/all", produces = "application/json")
-  public ResponseEntity<List<City>> getAllCity() {
-    return new ResponseEntity<>(dataService.read(), HttpStatus.OK);
+  public List<City> getAllCity() {
+    return dataService.read();
   }
 
   @AspectAnnotation
@@ -134,8 +137,14 @@ public class CityController {
   @AspectAnnotation
   @PostMapping("/bulkCreate")
   public HttpStatus bulkCreate(
-      @RequestBody final List<CityDTO> cityDTOS) {
-    dataService.createBulk(cityDTOS);
+      @RequestBody final CityDTO[] cityDTOS) {
+    Arrays.stream(cityDTOS).forEach(city -> {
+      try {
+        var country = countryService.getByID(city.getIdCountry());
+        dataService.createWithCountry(city, country);
+      } catch (ResourceNotFoundException ignored) {
+      }
+    });
     return HttpStatus.OK;
   }
 }

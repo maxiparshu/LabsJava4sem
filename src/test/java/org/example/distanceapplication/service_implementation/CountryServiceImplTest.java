@@ -19,8 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -33,8 +31,6 @@ public class CountryServiceImplTest {
   private LanguageRepository languageRepository;
   @Mock
   private LRUCache<Long, Country> cache;
-  @Mock
-  private JdbcTemplate jdbcTemplate;
   @InjectMocks
   private CountryServiceImpl service;
 
@@ -312,24 +308,6 @@ public class CountryServiceImplTest {
     assertThrows(ResourceNotFoundException.class, () -> service.getByLanguage(id));
     verify(countryRepository, never())
         .findAllCountryWithLanguage(id);
-  }
-
-  @Test
-  public void bulkInsert() {
-    var firstCountry = CountryDTO.builder()
-        .name("Belarus")
-        .id(1L)
-        .build();
-    var secondCountry = CountryDTO.builder()
-        .name("Japan")
-        .id(1L)
-        .build();
-    List<CountryDTO> countryDTOS = Arrays
-        .asList(firstCountry, secondCountry);
-    service.createBulk(countryDTOS);
-    String sql = "INSERT into country (name, id) VALUES (?, ?)";
-    verify(jdbcTemplate, times(1))
-        .batchUpdate(eq(sql), any(BatchPreparedStatementSetter.class));
   }
 
   @Test

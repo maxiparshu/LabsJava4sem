@@ -18,8 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,9 +30,6 @@ public class LanguageServiceImplTest {
   private LanguageRepository repository;
   @Mock
   private LRUCache<Long, Language> cache;
-
-  @Mock
-  private JdbcTemplate jdbcTemplate;
 
   @InjectMocks
   private LanguageServiceImpl service;
@@ -233,24 +228,6 @@ public class LanguageServiceImplTest {
         .thenReturn(Optional.empty());
     assertThrows(ResourceNotFoundException.class, () -> service.delete(id));
     verify(repository, never()).deleteById(id);
-  }
-
-  @Test
-  public void bulkInsert() {
-    var firstLanguage = LanguageDTO.builder()
-        .name("Belarus")
-        .id(1L)
-        .build();
-    var secondLanguage = LanguageDTO.builder()
-        .name("Japan")
-        .id(1L)
-        .build();
-    List<LanguageDTO> languagesDTOs = Arrays
-        .asList(firstLanguage, secondLanguage);
-    service.createBulk(languagesDTOs);
-    String sql = "INSERT into language (name, id) VALUES (?, ?)";
-    verify(jdbcTemplate, times(1))
-        .batchUpdate(eq(sql), any(BatchPreparedStatementSetter.class));
   }
 
   @Test

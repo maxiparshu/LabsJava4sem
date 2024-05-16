@@ -12,12 +12,6 @@ public class DistanceServiceImpl implements DistanceService {
   @Override
   public double getDistanceInKilometres(final City first,
                                         final City second) {
-    if (first == null || second == null) {
-      return -1.0;
-    }
-    if (first.getName().equalsIgnoreCase(second.getName())) {
-      return 0.0;
-    }
     double delta = first.getLongitude() - second.getLongitude();
     double radianValue = Math.sin(Math.toRadians(first.getLatitude()))
         * Math.sin(Math.toRadians(second.getLatitude()))

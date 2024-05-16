@@ -1,6 +1,5 @@
 package org.example.distanceapplication.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.example.distanceapplication.dto.CityDTO;
@@ -36,9 +35,8 @@ public class CityControllerTest {
 
   @Test
   void shouldReturnOkAll() {
-    ResponseEntity<List<City>> responseEntity = cityController.getAllCity();
-
-    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    cityController.getAllCity();
+    verify(cityService, times(1)).read();
   }
 
   @Test
@@ -201,9 +199,33 @@ public class CityControllerTest {
   }
 
   @Test
-  void bulkInsert() {
+  void bulkInsertWithExistedCountry() throws ResourceNotFoundException {
+    var city = CityDTO.builder()
+        .name("test")
+        .idCountry(2L)
+        .id(2L).build();
+    var cities = List.of(city).toArray(new CityDTO[1]);
+    when(countryService.getByID(anyLong()))
+        .thenReturn(Country.builder().name("Test").build());
     HttpStatus httpStatus = cityController
-        .bulkCreate(new ArrayList<>());
+        .bulkCreate(cities);
+    verify(cityService, times(1))
+        .createWithCountry(any(CityDTO.class), any(Country.class));
+    assertEquals(HttpStatus.OK, httpStatus);
+  }
+  @Test
+  void bulkInsertWithException() throws ResourceNotFoundException {
+    var city = CityDTO.builder()
+        .name("test")
+        .idCountry(2L)
+        .id(2L).build();
+    when(countryService.getByID(anyLong()))
+        .thenThrow(ResourceNotFoundException.class);
+    var cities = List.of(city).toArray(new CityDTO[1]);
+    HttpStatus httpStatus = cityController
+        .bulkCreate(cities);
+    verify(cityService, never())
+        .createWithCountry(any(CityDTO.class), any(Country.class));
     assertEquals(HttpStatus.OK, httpStatus);
   }
 

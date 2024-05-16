@@ -1,6 +1,6 @@
 package org.example.distanceapplication.controller;
 
-import java.util.ArrayList;
+import java.util.List;
 import org.example.distanceapplication.dto.LanguageDTO;
 import org.example.distanceapplication.entity.Language;
 import org.example.distanceapplication.exception.BadRequestException;
@@ -14,8 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LanguageControllerTest {
@@ -26,8 +25,8 @@ public class LanguageControllerTest {
 
   @Test
   void shouldReturnAll() {
-    var responseEntity = languageController.getAll();
-    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    languageController.getAll();
+    verify(service, times(1)).read();
   }
 
   @Test
@@ -121,7 +120,12 @@ public class LanguageControllerTest {
 
   @Test
   void bulkInsert() {
-    HttpStatus httpStatus = languageController.bulkCreate(new ArrayList<>());
+    var language = LanguageDTO.builder()
+        .name("test")
+        .id(2L).build();
+    var languages = List.of(language).toArray(new LanguageDTO[1]);
+    HttpStatus httpStatus = languageController.bulkCreate(languages);
+    verify(service, times(1)).create(language);
     assertEquals(HttpStatus.OK, httpStatus);
   }
 }

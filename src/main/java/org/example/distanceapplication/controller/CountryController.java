@@ -1,6 +1,7 @@
 package org.example.distanceapplication.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.example.distanceapplication.aspect.AspectAnnotation;
@@ -11,6 +12,7 @@ import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.example.distanceapplication.service.implementation.CountryServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/countries")
 @AllArgsConstructor
+@CrossOrigin
 public class CountryController {
   private final CountryServiceImpl countryService;
 
   @GetMapping(value = "/all", produces = "application/json")
-  public ResponseEntity<List<Country>> getAll() {
-    return new ResponseEntity<>(countryService.read(), HttpStatus.OK);
+  public List<Country> getAll() {
+    return countryService.read();
   }
 
   @AspectAnnotation
@@ -62,6 +65,7 @@ public class CountryController {
   @PostMapping("/create")
   public HttpStatus create(final @RequestBody CountryDTO countryDto)
       throws BadRequestException {
+    System.out.println(countryDto);
     countryService.create(countryDto);
     return HttpStatus.OK;
   }
@@ -80,6 +84,7 @@ public class CountryController {
       final @RequestBody CountryDTO countryDto)
       throws ResourceNotFoundException {
     countryService.modifyLanguage(countryDto, false);
+    System.out.println(countryDto.getLanguages());
     return HttpStatus.OK;
   }
 
@@ -88,6 +93,7 @@ public class CountryController {
   public HttpStatus deleteLanguages(
       final @RequestBody CountryDTO countryDto)
       throws ResourceNotFoundException {
+    System.out.println(countryDto);
     countryService.modifyLanguage(countryDto, true);
     return HttpStatus.OK;
   }
@@ -103,8 +109,8 @@ public class CountryController {
   @AspectAnnotation
   @PostMapping("/bulkCreate")
   public HttpStatus bulkCreate(
-      @RequestBody final List<CountryDTO> countries) {
-    countryService.createBulk(countries);
+      @RequestBody final CountryDTO[] countries) {
+    Arrays.stream(countries).forEach(countryService::create);
     return HttpStatus.OK;
   }
 }

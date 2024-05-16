@@ -1,7 +1,5 @@
 package org.example.distanceapplication.service.implementation;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -15,44 +13,15 @@ import org.example.distanceapplication.repository.CountryRepository;
 import org.example.distanceapplication.repository.LanguageRepository;
 import org.example.distanceapplication.service.DataService;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class CountryServiceImpl implements DataService<Country, CountryDTO> {
+public class CountryServiceImpl implements DataService<Country> {
   private final CountryRepository countryRepository;
   private final LanguageRepository languageRepository;
   private final LRUCache<Long, Country> cache;
-  private final JdbcTemplate jdbcTemplate;
   private static final String DONT_EXIST = " doesn't exist";
-
-  private long findFreeID() {
-    var list = read();
-    long i = 1;
-    for (Country country : list) {
-      if (country.getId() != i) {
-        return i;
-      }
-      i++;
-    }
-    return i;
-  }
-
-  private long findFreeID(final HashSet<Long> usedIndexes) {
-    var list = read();
-    long i = usedIndexes.isEmpty() ? 1 : usedIndexes
-        .iterator().next();
-    for (Country country : list) {
-      if (country.getId() != i) {
-        return i;
-      }
-      i++;
-    }
-    return i + 1;
-  }
-
   @Override
   public Country create(final Country country) {
     cache.put(country.getId(), country);
@@ -114,32 +83,6 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
     }
   }
 
-  @Override
-  public void createBulk(final List<CountryDTO> list)
-      throws BadRequestException {
-    List<Country> countries = list.stream()
-        .map(countryDTO -> Country.builder().name(countryDTO.getName())
-            .build()).toList();
-    String sql = "INSERT into country (name, id) VALUES (?, ?)";
-    var indexes = new HashSet<Long>();
-    jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
-      @Override
-      public void setValues(final PreparedStatement statement,
-                            final int i)
-          throws SQLException {
-        statement.setString(1, countries.get(i).getName());
-        long index = findFreeID(indexes);
-        indexes.add(index);
-        statement.setLong(2, index);
-      }
-
-      @Override
-      public int getBatchSize() {
-        return countries.size();
-      }
-    });
-  }
-
   @SuppressWarnings("checkstyle:OverloadMethodsDeclarationOrder")
   public Country create(final CountryDTO countryDto)
       throws BadRequestException {
@@ -149,12 +92,14 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
       throw new BadRequestException("Country with this name is existed");
     } catch (ResourceNotFoundException e) {
       var listLanguage = new HashSet<Language>();
-      for (String ptrLanguage : countryDto.getLanguages()) {
-        var language = languageRepository.getByName(ptrLanguage);
-        language.ifPresent(listLanguage::add);
+      if (!countryDto.getLanguages().isEmpty()) {
+        for (String ptrLanguage : countryDto.getLanguages()) {
+          var language = languageRepository.getByName(ptrLanguage);
+          language.ifPresent(listLanguage::add);
+        }
       }
       var newCountry = Country.builder().name(countryDto.getName())
-          .languages(new HashSet<>()).id(findFreeID()).build();
+          .languages(new HashSet<>()).build();
       for (Language language : listLanguage) {
         newCountry.addLanguage(language);
       }
@@ -189,10 +134,12 @@ public class CountryServiceImpl implements DataService<Country, CountryDTO> {
       throws ResourceNotFoundException {
     try {
       var country = getByID(countryDto.getId());
-      for (String language : countryDto.getLanguages()) {
-        var tempLanguage = languageRepository.getByName(language);
-        tempLanguage.ifPresent(!deleteFlag
-            ? country::addLanguage : country::removeLanguage);
+      if (!countryDto.getLanguages().isEmpty()) {
+        for (String language : countryDto.getLanguages()) {
+          var tempLanguage = languageRepository.getByName(language);
+          tempLanguage.ifPresent(!deleteFlag
+              ? country::addLanguage : country::removeLanguage);
+        }
       }
       cache.remove(country.getId());
       countryRepository.save(country);

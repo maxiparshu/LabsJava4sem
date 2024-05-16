@@ -28,5 +28,6 @@ public class DistanceServiceImplTest {
         .build();
     assertEquals(221.2667,
         service.getDistanceInKilometres(firstCity, secondCity));
+
   }
 }

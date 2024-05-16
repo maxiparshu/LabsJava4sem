@@ -6,7 +6,7 @@ import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface DataService<T, D> {
+public interface DataService<T> {
   T create(T entity) throws BadRequestException;
 
   List<T> read();
@@ -19,5 +19,4 @@ public interface DataService<T, D> {
 
   void delete(Long id) throws ResourceNotFoundException;
 
-  void createBulk(List<D> list) throws BadRequestException;
 }

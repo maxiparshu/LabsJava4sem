@@ -11,7 +11,6 @@ import org.example.distanceapplication.entity.Country;
 import org.example.distanceapplication.exception.BadRequestException;
 import org.example.distanceapplication.exception.ResourceNotFoundException;
 import org.example.distanceapplication.repository.CityRepository;
-import org.example.distanceapplication.repository.CountryRepository;
 import org.example.distanceapplication.service.implementation.CityServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -30,11 +27,7 @@ public class CityServiceImplTest {
   @Mock
   private CityRepository repository;
   @Mock
-  private CountryRepository countryRepository;
-  @Mock
   private LRUCache<Long, City> cache;
-  @Mock
-  private JdbcTemplate jdbcTemplate;
   @InjectMocks
   private CityServiceImpl service;
 
@@ -280,31 +273,6 @@ public class CityServiceImplTest {
         .remove(id);
     verify(repository, never())
         .deleteById(id);
-  }
-
-  @Test
-  public void bulkInsert() {
-    CityDTO firstCity = CityDTO.builder()
-        .name("Minsk")
-        .longitude(22.2521)
-        .latitude(32.4544)
-        .idCountry(1L)
-        .build();
-    CityDTO secondCity = CityDTO.builder()
-        .name("Pinsk")
-        .longitude(17.3630)
-        .latitude(44.2135)
-        .idCountry(1L)
-        .build();
-    List<CityDTO> cityDTOS = Arrays.asList(firstCity, secondCity);
-    Optional<Country> expectedCountry = Optional.of(new Country());
-    when(countryRepository.getCountryById(anyLong()))
-        .thenReturn(expectedCountry);
-    service.createBulk(cityDTOS);
-    String sql = "INSERT into city (name, id, latitude, longitude, id_country)"
-        + "VALUES (?, ?, ?, ?, ?)";
-    verify(jdbcTemplate, times(1))
-        .batchUpdate(eq(sql), any(BatchPreparedStatementSetter.class));
   }
 
   @Test
