@@ -1,49 +1,53 @@
-version: '3.8'
+version: '3.4'
 
 services:
   db:
     image: postgres
     container_name: database
     environment:
-      POSTGRES_USER: ${DATASOURCE_USER}
-      POSTGRES_PASSWORD: ${DATASOURCE_PASSWORD}
-      POSTGRES_DB: ${DATASOURCE_URL}
+      POSTGRES_USER: $DATASOURCE_USER
+      POSTGRES_PASSWORD: $DATASOURCE_PASSWORD
+      POSTGRES_DB: $DATASOURCE_NAME
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d ${DATASOURCE_URL} -U ${DATASOURCE_USER}"]
+      test: [ "CMD-SHELL", "pg_isready -d ${DATASOURCE_NAME} -U ${DATASOURCE_USER}" ]
       interval: 1s
       timeout: 5s
       retries: 10
     volumes:
-      - 59f7f374b08ce247c3f17d45eae5b13f54c1d317efc6df1f8a3d1d79e522d2ea:/var/lib/postgresql/data
+      - data:/var/lib/postgresql/data
     restart: always
+    expose:
+      - '5432'
     ports:
-      - "5432:5432"
+      - '5432:5432'
   client-backend:
-    image: geo_data_backend
+    image: app_backend
     container_name: backend
     build:
       context: .
       dockerfile: Dockerfile
+    expose:
+      - '8080'
     ports:
-      - "8080:8080"
+      - '8080:8080'
     depends_on:
       db:
-        condition: service_healthy
+         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=${DATASOURCE_URL}
-      - SPRING_DATASOURCE_USERNAME=${DATASOURCE_USER}
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_DATASOURCE_URL=$DATASOURCE_URL
+      - SPRING_DATASOURCE_USERNAME=$DATASOURCE_USER
+      - SPRING_DATASOURCE_PASSWORD=$DATASOURCE_PASSWORD
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
   client-frontend:
-    image: geo_data_frontend
+    image: app_frontend
     container_name: frontend
     build:
       context: D:\JAVALABS\geofront
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-
 volumes:
-  59f7f374b08ce247c3f17d45eae5b13f54c1d317efc6df1f8a3d1d79e522d2ea:
+  data:
+    name: 05af822535846f3aa726fbd8f7243b0d6830c4a0c082360c3b5884006d922c4a
     external: true
