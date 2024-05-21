@@ -13,4 +13,4 @@ COPY --from=build /home/build/libs/*.jar /app/
 
 RUN ls /app/
 
-ENTRYPOINT ["java", "-jar",  "/app/distanceApplication-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar",  "/app/home-0.0.1-SNAPSHOT.jar"]
