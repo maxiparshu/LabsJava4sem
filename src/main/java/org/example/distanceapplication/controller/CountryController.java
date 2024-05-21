@@ -32,7 +32,6 @@ public class CountryController {
 
   @GetMapping(value = "/all", produces = "application/json")
   public List<Country> getAll() {
-    System.out.println(countryService.read().get(0).getName());
     return countryService.read();
   }
 
