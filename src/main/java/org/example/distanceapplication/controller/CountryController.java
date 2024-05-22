@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/countries")
 @AllArgsConstructor
-@CrossOrigin
+@CrossOrigin(origins = {"http://localhost:3000", "https://lab7-front-13nmo0vh6-maxiparshus-projects.vercel.app"})
 public class CountryController {
   private final CountryServiceImpl countryService;
 
