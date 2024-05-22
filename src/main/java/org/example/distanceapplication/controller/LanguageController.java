@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/languages")
 @AllArgsConstructor
-@CrossOrigin
+@CrossOrigin(origins = {"http://localhost:3000", "https://lab7-front-13nmo0vh6-maxiparshus-projects.vercel.app"})
 public class LanguageController {
   private final LanguageServiceImpl languageService;
 
