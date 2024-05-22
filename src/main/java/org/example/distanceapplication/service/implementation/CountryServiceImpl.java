@@ -115,7 +115,7 @@ public class CountryServiceImpl implements DataService<Country> {
           "Country with this id doesn't exist");
     }
     var newLanguages = new HashSet<Language>();
-    if (!country.getLanguages().isEmpty()) {
+    if (country.getLanguages() != null) {
       for (String language : country.getLanguages()) {
         var languageTemp = languageRepository.getByName(language);
         languageTemp.ifPresent(newLanguages::add);
