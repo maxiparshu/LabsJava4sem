@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/cities")
 @AllArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "https://lab7-front-13nmo0vh6-maxiparshus-projects.vercel.app"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://lab7-front.vercel.app"})
 public class CityController {
   private final CityServiceImpl dataService;
   private final DistanceService distanceService;
