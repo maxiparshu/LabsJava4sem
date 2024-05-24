@@ -55,11 +55,11 @@ jobs:
       - name: Install Railway CLI
         run: |
           curl -sSL https://railway.app/install.sh | bash
-      - name: Link Railway Project
-        uses: hubertstefanski/action-railway@v1.1.4
-        with:
-          railway_token: ${{ secrets.RAILWAY_API_TOKEN }}
-          railway_service: 7f6a826f-c2e2-49c8-a8fb-1576844de643
+      - name: Deploy to Railway
+        run: railway up
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+          RAILWAY_SERVICE_ID: 7f6a826f-c2e2-49c8-a8fb-1576844de643
 
   release-project:
     name: "Release project"
