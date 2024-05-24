@@ -56,17 +56,10 @@ jobs:
         run: |
           curl -sSL https://railway.app/install.sh | bash
       - name: Link Railway Project
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer secrets.RAILWAY_API_TOKEN " \
-            -H "Content-Type: application/json" \
-            -d '{"projectId": "5a6a191d-e3f4-48ac-b69f-4388277b2086", "serviceId": "7f6a826f-c2e2-49c8-a8fb-1576844de643"}' \
-            https://api.railway.app/v1/projects/link
-      - name: Deploy to Railway
-        run: railway up
-        env:
-          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
-          RAILWAY_SERVICE_ID: 7f6a826f-c2e2-49c8-a8fb-1576844de643
+        uses: hubertstefanski/action-railway@v1.1.4
+        with:
+          railway_token: ${{ secrets.RAILWAY_API_TOKEN }}
+          railway_service: 7f6a826f-c2e2-49c8-a8fb-1576844de643
 
   release-project:
     name: "Release project"
